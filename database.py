@@ -1,36 +1,26 @@
-import sqlalchemy as db
-from sqlalchemy import create_engine, text
-from models.entities.entities import metadata 
-from sqlalchemy.exc import ProgrammingError
+import os
 
-# Set connection data
-DATABASE_USER = 'admin'
-DATABASE_PASSWORD = 'mypassword'
-DATABASE_HOST = 'localhost'
-DATABASE_PORT = '5432'
-DATABASE_NAME = 'database'
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base
 
-# Create a connection to the default 'postgres' database
-engine = create_engine(f'postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/postgres')
+# Создание базового класса для декларативных моделей
+Base = declarative_base()
 
-# Create a connection and set autocommit to true
-with engine.connect() as connection:
-    connection.execution_options(isolation_level="AUTOCOMMIT")  # Enable autocommit mode
-    # Try to create the database
-    try:
-        connection.execute(text(f"CREATE DATABASE {DATABASE_NAME} OWNER {DATABASE_USER}"))
-        #print(f"Database '{DATABASE_NAME}' created successfully.")
-    except ProgrammingError as e:
-        # Check if the error is because the database already exists
-        if "database \"" + DATABASE_NAME + "\" already exists" in str(e):
-            pass
-            print(f"Database '{DATABASE_NAME}' already exists. No new database created.")
-        else:
-            print(f"Error creating database: {e}")
+# Получение данных подключения из переменных окружения
+DATABASE_USER = os.getenv('DB_USER', 'admin')
+DATABASE_PASSWORD = os.getenv('DB_PASSWORD', 'mypassword')
+DATABASE_HOST = os.getenv('DB_HOST', 'localhost')
+DATABASE_PORT = os.getenv('DB_PORT', '5432')
+DATABASE_NAME = os.getenv('DB_NAME', 'database')
 
-# Now connect to the created or existing database
-engine = create_engine(f'postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}')
 
-# Create tables 
-metadata.create_all(engine) 
-print("Tables created successfully.")
+# Функция для создания движка базы данных
+def create_db_engine(database_name=None):
+    if database_name is None:
+        database_name = DATABASE_NAME
+    return create_engine(
+        f'postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{database_name}')
+
+
+# Создание движка для основной базы данных
+engine = create_db_engine()

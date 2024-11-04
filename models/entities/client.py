@@ -1,36 +1,42 @@
 from datetime import datetime
 
-import sqlalchemy as db
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import validates, relationship
 
-metadata = db.MetaData()
-
-
-class Client:
-    def __init__(self, full_name, email, phone, company_name, commercial_contact, id=None):
-        self.id = id
-        self.full_name = full_name
-        self.email = email
-        self.phone = phone
-        self.company_name = company_name
-        self.commercial_contact = commercial_contact
-        self.creation_date = datetime.now().strftime("%d/%m/%Y, %H:%M") 
-        self.last_updated = datetime.now().strftime("%d/%m/%Y, %H:%M")  
-
-    def validate(self):
-        required_fields = ["full_name", "email", "phone", "company_name", "commercial_contact"]
-        for field in required_fields:
-            if getattr(self, field) is None or getattr(self, field).strip() == "":
-                raise ValueError(f"Le champ '{field}' est requis.")
+from database import Base
 
 
-clients = db.Table('clients', metadata,
-                   db.Column('id', db.Integer, primary_key=True),
-                   db.Column('full_name', db.String(length=255), nullable=False),
-                   db.Column('email', db.String(length=255), nullable=False, unique=True),
-                   db.Column('phone', db.String(length=50), nullable=True),
-                   db.Column('company_name', db.String(length=255), nullable=True),
-                   db.Column('creation_date', db.DateTime, default=datetime),
-                   db.Column('last_updated', db.DateTime, default=datetime, onupdate=datetime),
-                   db.Column('commercial_contact', db.String(length=255), nullable=True),
-                   db.Column('user_id', db.Integer, db.ForeignKey('users.id'), nullable=True)
-                   )
+class Client(Base):
+    __tablename__ = 'clients'
+
+    id = Column(Integer, primary_key=True)
+    full_name = Column(String(100), nullable=False)
+    email = Column(String(120), unique=True, nullable=False)
+    phone = Column(String(20))
+    company_name = Column(String(100))
+    creation_date = Column(DateTime, default=datetime)
+    last_update = Column(DateTime, default=datetime, onupdate=datetime)
+
+    commercial_id = Column(Integer, ForeignKey('users.id'))
+    commercial = relationship("User", back_populates="clients")
+
+    def __repr__(self):
+        return f"<Client {self.full_name}>"
+
+    @validates('full_name')
+    def validate_full_name(self, key, value):
+        if not value or value.strip() == "":
+            raise ValueError("Full name is required.")
+        return value
+
+    @validates('email')
+    def validate_email(self, key, value):
+        if not value or '@' not in value:
+            raise ValueError("Valid email is required.")
+        return value
+
+    @validates('phone')
+    def validate_phone(self, key, value):
+        if value and not value.replace('+', '').isdigit():
+            raise ValueError("Phone number should contain only digits and '+'.")
+        return value
