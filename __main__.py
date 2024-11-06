@@ -1,8 +1,8 @@
 from sqlalchemy.orm import sessionmaker
 from controllers.user_controller import UserController
 from controllers.main_controller import MainController
-from database import engine
-from database_init import init_database
+from config import engine
+from database import init_database
 import logging
 from views.main_view import MainView
 

@@ -1,42 +1,48 @@
-from datetime import datetime
+import enum
+import re
+from typing import List, Optional
+from sqlalchemy import String, ForeignKey, Float, Boolean, Integer, Text, Enum
+from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
+from sqlalchemy.types import DateTime
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm import validates, relationship
-
-from database import Base
+from models.entities.base import Base, str_100, str_120, str_255
 
 
 class Client(Base):
-    __tablename__ = 'clients'
+    __tablename__ = 'clients' 
+    full_name: Mapped[str_100] = mapped_column(nullable=False)
+    email: Mapped[str_120] = mapped_column(unique=True, nullable=False)
+    phone: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    company_name: Mapped[Optional[str_100]] = mapped_column(nullable=True)
 
-    id = Column(Integer, primary_key=True)
-    full_name = Column(String(100), nullable=False)
-    email = Column(String(120), unique=True, nullable=False)
-    phone = Column(String(20))
-    company_name = Column(String(100))
-    creation_date = Column(DateTime, default=datetime)
-    last_update = Column(DateTime, default=datetime, onupdate=datetime)
+    commercial_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    commercial: Mapped["User"] = relationship("User", back_populates="clients")
 
-    commercial_id = Column(Integer, ForeignKey('users.id'))
-    commercial = relationship("User", back_populates="clients")
+    contracts: Mapped[List["Contract"]] = relationship(
+        "Contract",
+        back_populates="client",
+        cascade="all, delete-orphan"
+    )
 
-    def __repr__(self):
-        return f"<Client {self.full_name}>"
+    events: Mapped[List["Event"]] = relationship(
+        "Event",
+        back_populates="client",
+        cascade="all, delete-orphan"
+    )
 
-    @validates('full_name')
-    def validate_full_name(self, key, value):
-        if not value or value.strip() == "":
-            raise ValueError("Full name is required.")
-        return value
-
-    @validates('email')
-    def validate_email(self, key, value):
-        if not value or '@' not in value:
-            raise ValueError("Valid email is required.")
-        return value
-
-    @validates('phone')
-    def validate_phone(self, key, value):
-        if value and not value.replace('+', '').isdigit():
-            raise ValueError("Phone number should contain only digits and '+'.")
-        return value
+    @validates('full_name', 'email', 'phone')
+    def validate_fields(self, key, value):
+        if key == 'full_name':
+            if not value or not value.strip():
+                raise ValueError("Full name is required.")
+            return value.strip()
+        elif key == 'email':
+            if not value or not re.match(r"[^@]+@[^@]+\.[^@]+", value):
+                raise ValueError("Valid email is required.")
+            return value.lower()
+        elif key == 'phone':
+            if value:
+                value = value.strip()
+                if not value.replace('+', '').isdigit():
+                    raise ValueError("Phone number should contain only digits and '+'.")
+            return value

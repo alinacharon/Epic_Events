@@ -2,8 +2,8 @@ from datetime import datetime
 
 from sqlalchemy.orm import sessionmaker
 
-from database import engine
-from models.entities.client import Client
+from config import engine
+from models import Client
 
 
 class ClientManager:

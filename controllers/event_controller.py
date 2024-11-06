@@ -1,4 +1,4 @@
-from models.managers.event_manager import EventManager
+from models import EventManager
 from views.event_view import EventView
 from views.main_view import MainView
 

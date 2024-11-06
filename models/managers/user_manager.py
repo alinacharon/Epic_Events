@@ -1,7 +1,7 @@
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from models.entities.user import User, Role
+from models import User, Role
 
 
 class UserManager:

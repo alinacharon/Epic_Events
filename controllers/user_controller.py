@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
-from models.entities.user import User, Role
+from models import User, Role
 from views.user_view import UserView
 from views.main_view import MainView
-from models.managers.user_manager import UserManager
+from models import UserManager
 
 class UserController:
     def __init__(self, db: Session):
@@ -29,11 +29,11 @@ class UserController:
         try:
             role_enum = Role[role.upper()]  # Преобразование строки в enum Role
             new_user = self.user_manager.add_user(self.db, username, email, role_enum, password)  # Используем UserManager
-            print(f"Utilisateur {new_user.username} créé avec succès.")
+            MainView.print_success(f"Utilisateur {new_user.username} créé avec succès.")
         except ValueError as ve:
-            print(ve)  # Выводим сообщение об ошибке, если пользователь уже существует
+            MainView.print_error(ve)  # Выводим сообщение об ошибке, если пользователь уже существует
         except Exception as e:
-            print(f"Erreur lors de la création de l'utilisateur : {e}")
+           MainView.print_error(f"Erreur lors de la création de l'utilisateur : {e}")
 
     def list_users(self):
         users = self.db.query(User).all()

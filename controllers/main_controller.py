@@ -3,7 +3,7 @@ from views.main_view import MainView
 
 from controllers.user_controller import UserController
 
-from models.entities.user import Role
+from models import User, Role
 
 
 
@@ -16,10 +16,8 @@ class MainController:
         role = self.user.role  
         print(f"User role: {role}")
 
-        if role == Role.ADMIN:
-            self.manage_admin_menu()
-        elif role == Role.MANAGEMENT:
-            self.show_management_menu()
+        if role == Role.MANAGEMENT:
+            self.manage_management_menu()
         elif role == Role.COMMERCIAL:
             self.show_commercial_menu()
         elif role == Role.SUPPORT:
@@ -27,9 +25,9 @@ class MainController:
         else:
             print("Rôle inconnu.")
 
-    def manage_admin_menu(self):
+    def manage_management_menu(self):
         while True:
-            choice = MainView.show_admin_menu()
+            choice = MainView.show_management_menu()
 
             match choice:
                 case '1':

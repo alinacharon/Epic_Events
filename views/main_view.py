@@ -20,7 +20,7 @@ class MainView:
         print(info)
 
     @classmethod
-    def show_admin_menu(cls):
+    def show_management_menu(cls):
         print("\nMenu Administrateur:")
         print("1. Gestion des utilisateurs")
         print("q. Quitter")

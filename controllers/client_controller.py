@@ -1,6 +1,5 @@
-from models.entities.client import Client
-from models.entities.user import Role
-from models.managers.client_manager import ClientManager
+from models import Client, Role
+from models import ClientManager
 from views.client_view import ClientView
 from views.main_view import MainView
 
