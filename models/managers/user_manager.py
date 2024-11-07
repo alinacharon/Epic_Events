@@ -1,11 +1,15 @@
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
 
+from config import engine
 from models import User, Role
 
 
 class UserManager:
     def __init__(self):
+           
+        self.Session = sessionmaker(bind=engine)
         # Создаем контекст для хеширования с настройками безопасности
         self.pwd_context = CryptContext(
             schemes=["argon2"],
@@ -54,3 +58,21 @@ class UserManager:
         if user and self.verify_password(password, user.password):
             return user
         return None
+
+    def get_user_by_id(self, user_id):
+        with self.Session() as session:
+            return session.query(User).get(user_id)
+
+    def update_user(self, user_id, updated_data):
+        with self.Session() as session:
+            user = session.query(User).get(user_id)
+            if not user:
+                return False
+
+            for key, value in updated_data.items():
+                if value is not None:
+                    setattr(user, key, value)
+
+            session.commit()
+            return user
+

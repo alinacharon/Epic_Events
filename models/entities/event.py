@@ -1,13 +1,13 @@
-import enum
-import re
-from typing import List, Optional
-from sqlalchemy import String, ForeignKey, Float, Boolean, Integer, Text, Enum
+from typing import Optional
+from sqlalchemy import ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 from sqlalchemy.types import DateTime
-from models.entities.base import Base, str_255
+from models.entities.base import Base, intpk, str_255
 
 class Event(Base):
     __tablename__ = 'events' 
+    
+    id: Mapped[intpk]
     start_date: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     end_date: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     location: Mapped[str_255] = mapped_column(nullable=False)

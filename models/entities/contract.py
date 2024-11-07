@@ -1,22 +1,18 @@
-from datetime import datetime
-import enum
-import re
-from typing import List, Optional
-from sqlalchemy import Numeric, String, ForeignKey, Float, Boolean, Integer, Text, Enum
+from typing import List
+from sqlalchemy import Numeric, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
-from sqlalchemy.types import DateTime
 
-from models.entities.base import Base, str_100, str_120, str_255
+from models.entities.base import Base, intpk, created_at
 
 
 class Contract(Base):
     __tablename__ = 'contracts'
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[intpk]
     total_amount: Mapped[float] = mapped_column(Numeric(10, 2))
     remaining_amount: Mapped[float] = mapped_column(Numeric(10, 2))
     signed: Mapped[bool] = mapped_column(default=False)
-    creation_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    creation_date: Mapped[created_at]
 
     # Внешние ключи
     client_id: Mapped[int] = mapped_column(ForeignKey("clients.id"))

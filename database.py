@@ -4,8 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from config import create_db_engine, DATABASE_NAME, DATABASE_USER
 from models.entities.base import Base
-# Импортируем все модели, которые наследуются от Base
-from models import User, Client, Event, Contract
+
 
 # Настройка логирования
 logging.basicConfig(
@@ -16,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_database(postgres_engine):
-    """Создает базу данных, если она не существует."""
+    """Creates the database if it does not exist."""
     try:
         with postgres_engine.connect() as connection:
             connection.execution_options(isolation_level="AUTOCOMMIT")
@@ -33,7 +32,7 @@ def create_database(postgres_engine):
 
 
 def create_tables(engine):
-    """Создает все таблицы в базе данных."""
+    """Creates all tables in the database."""
     try:
         Base.metadata.create_all(engine)
         logger.info("Tables created successfully.")
@@ -43,7 +42,7 @@ def create_tables(engine):
 
 
 def init_database():
-    """Инициализирует базу данных и создает все необходимые таблицы."""
+    """Initializes the database and creates all necessary tables."""
     postgres_engine = None
     engine = None
 
@@ -65,7 +64,6 @@ def init_database():
         raise
 
     finally:
-        # Закрытие соединений
         if postgres_engine:
             postgres_engine.dispose()
         if engine:
@@ -73,7 +71,7 @@ def init_database():
 
 
 def reset_database():
-    """Удаляет и пересоздает все таблицы (полезно для тестирования)."""
+    """DELETE ALL TABLES"""
     engine = create_db_engine()
     try:
         Base.metadata.drop_all(engine)

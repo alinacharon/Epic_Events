@@ -1,18 +1,18 @@
-import enum
 import re
 from typing import List, Optional
-from sqlalchemy import String, ForeignKey, Float, Boolean, Integer, Text, Enum
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
-from sqlalchemy.types import DateTime
 
-from models.entities.base import Base, str_100, str_120, str_255
+from models.entities.base import Base, intpk, str_100, str_120, str_20
 
 
 class Client(Base):
     __tablename__ = 'clients' 
+    
+    id: Mapped[intpk]
     full_name: Mapped[str_100] = mapped_column(nullable=False)
     email: Mapped[str_120] = mapped_column(unique=True, nullable=False)
-    phone: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    phone: Mapped[Optional[str_20]] 
     company_name: Mapped[Optional[str_100]] = mapped_column(nullable=True)
 
     commercial_id: Mapped[int] = mapped_column(ForeignKey("users.id"))

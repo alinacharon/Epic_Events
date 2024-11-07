@@ -19,6 +19,7 @@ updated_at = Annotated[
         onupdate=lambda: datetime.now(timezone.utc)
     )
 ]
+str_20 = Annotated [str, mapped_column(String(20))]
 str_100 = Annotated[str, mapped_column(String(100))]
 str_120 = Annotated[str, mapped_column(String(120))]
 str_255 = Annotated[str, mapped_column(String(255))]
