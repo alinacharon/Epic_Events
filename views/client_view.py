@@ -38,8 +38,8 @@ class ClientView:
             print("Aucun client trouvé.")
             return
         for client in client_list:
-            print(f"- {client['id']}: {client['full_name']}, Email : {client['email']}, "
-                  f"Entreprise : {client['company_name']}, Téléphone : {client['phone']}")
+            print(f"- {client.id}: {client.full_name}, Email : {client.email}, "
+                f"Entreprise : {client.company_name}, Téléphone : {client.phone}")
 
     @staticmethod
     def search_criteria():

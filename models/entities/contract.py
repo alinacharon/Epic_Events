@@ -8,16 +8,13 @@ from models.entities.base import Base, intpk, created_at
 class Contract(Base):
     __tablename__ = 'contracts'
 
-    id: Mapped[intpk]
     total_amount: Mapped[float] = mapped_column(Numeric(10, 2))
     remaining_amount: Mapped[float] = mapped_column(Numeric(10, 2))
     signed: Mapped[bool] = mapped_column(default=False)
-    creation_date: Mapped[created_at]
 
     # Внешние ключи
     client_id: Mapped[int] = mapped_column(ForeignKey("clients.id"))
-    commercial_id: Mapped[int] = mapped_column(ForeignKey("users.id"))  
-
+    commercial_id: Mapped[int] = mapped_column(ForeignKey("users.id")) 
     # Отношения
     client: Mapped["Client"] = relationship(back_populates="contracts")
     commercial: Mapped["User"] = relationship(

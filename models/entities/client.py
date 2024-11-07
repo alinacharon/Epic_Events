@@ -9,7 +9,6 @@ from models.entities.base import Base, intpk, str_100, str_120, str_20
 class Client(Base):
     __tablename__ = 'clients' 
     
-    id: Mapped[intpk]
     full_name: Mapped[str_100] = mapped_column(nullable=False)
     email: Mapped[str_120] = mapped_column(unique=True, nullable=False)
     phone: Mapped[Optional[str_20]] 

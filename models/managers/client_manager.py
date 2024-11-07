@@ -10,7 +10,7 @@ class ClientManager:
     def __init__(self):
         self.Session = sessionmaker(bind=engine)
 
-    def create_client(self, client_data):
+    def create_client(self, client_data, session):
         with self.Session() as session:
             existing_client = session.query(Client).filter_by(email=client_data["email"]).first()
             if existing_client:
