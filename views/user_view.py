@@ -23,7 +23,7 @@ class UserView:
             "Entrez le rôle de l'utilisateur (COMMERCIAL, MANAGEMENT, SUPPORT) : ")
         password = input("Entrez le mot de passe : ")
         return username, email, role, password
-    
+
     @staticmethod
     def display_user_details(user):
         """Displays detailed information about a user."""
@@ -32,7 +32,7 @@ class UserView:
         print(f"Username: {user.username}")
         print(f"E-mail : {user.email}")
         print(f"Rôle : {user.role_value}")
-        
+
     @staticmethod
     def get_updated_user_data():
         """Collects updated data for editing a user."""
@@ -47,18 +47,3 @@ class UserView:
             "email": email if email else None,
             "role": role.upper() if role else None
         }
-   
-
-# 1. Gestion des employés
-#    - Créer un nouvel employé
-#    - Mettre à jour les informations d'un employé
-#    - Supprimer un employé
-# 2. Gestion des contrats
-#    - Créer un nouveau contrat
-#    - Modifier un contrat existant
-# 3. Gestion des événements
-#    - Voir tous les événements
-#    - Filtrer les événements (par exemple, sans support assigné)
-#    - Assigner un employé de support à un événement
-# 4. Voir les clients
-# 5. Quitter

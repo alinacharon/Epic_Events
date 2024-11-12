@@ -8,7 +8,7 @@ from models import User, Role
 
 class UserManager:
     def __init__(self):
-           
+
         self.Session = sessionmaker(bind=engine)
         # Создаем контекст для хеширования с настройками безопасности
         self.pwd_context = CryptContext(
@@ -75,4 +75,3 @@ class UserManager:
 
             session.commit()
             return user
-

@@ -1,10 +1,10 @@
 import logging
+
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
 from config import create_db_engine, DATABASE_NAME, DATABASE_USER
 from models.entities.base import Base
-
 
 # Настройка логирования
 logging.basicConfig(

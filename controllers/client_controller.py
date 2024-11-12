@@ -1,5 +1,5 @@
-from models import Client, Role
 from models import ClientManager
+from models import Role
 from views.client_view import ClientView
 from views.main_view import MainView
 
@@ -10,7 +10,8 @@ class ClientController:
         self.user = user
         self.db = db
 
-    def client_menu(self):
+    # COMMERCIAL TEAM MENU
+    def commercial_client_menu(self):
         while True:
             choice = ClientView.manage_clients_menu()
             match choice:
@@ -44,11 +45,10 @@ class ClientController:
     def create_client(self):
         """Create a new client."""
         try:
-            client_data = ClientView.get_client_data()
-            client_data['commercial_id'] = self.user.id
-            client = Client(**client_data)
-            client.validate()
-            new_client = self.client_manager.create_client(client_data)
+            full_name, email, phone, company_name = ClientView.get_client_data()
+
+            new_client = self.client_manager.add_client(full_name, email, phone, company_name, self.user.id)
+
             MainView.print_success(f"Nouveau client créé avec succès. ID: {new_client.id}")
             return new_client
         except ValueError as e:
@@ -57,6 +57,7 @@ class ClientController:
     def list_all_clients(self):
         """List all clients - accessible to all users."""
         try:
+            # Подгружаем информацию о коммерческом представителе для каждого клиента
             clients = self.client_manager.get_all_clients()
             ClientView.display_client_list(clients)
         except Exception as e:
@@ -68,16 +69,16 @@ class ClientController:
             MainView.print_error("Accès refusé. Cette fonction est réservée aux commerciaux.")
             return
         try:
-            clients = self.client_manager.get_clients_by_commercial(self.user.id)
+            clients = self.client_manager.get_my_clients(self.user.id)
             ClientView.display_client_list(clients)
         except Exception as e:
             MainView.print_error(f"Erreur lors de la récupération de vos clients: {e}")
 
     def search_clients(self):
-        """Search clients based on criteria."""
         try:
             search_criteria = ClientView.search_criteria()
             matched_clients = self.client_manager.search_clients(search_criteria)
+
             if matched_clients:
                 ClientView.display_client_list(matched_clients)
             else:
@@ -106,7 +107,6 @@ class ClientController:
 
             if updated_client:
                 MainView.print_success("Les informations du client ont été mises à jour.")
-                ClientView.display_client_details(updated_client)
             else:
                 MainView.print_error("Échec de la mise à jour du client.")
         except ValueError as e:

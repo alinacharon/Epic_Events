@@ -1,8 +1,9 @@
 from typing import List
-from sqlalchemy import Numeric, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
-from models.entities.base import Base, intpk, created_at
+from sqlalchemy import Numeric, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from models.entities.base import Base
 
 
 class Contract(Base):
@@ -14,7 +15,7 @@ class Contract(Base):
 
     # Внешние ключи
     client_id: Mapped[int] = mapped_column(ForeignKey("clients.id"))
-    commercial_id: Mapped[int] = mapped_column(ForeignKey("users.id")) 
+    commercial_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     # Отношения
     client: Mapped["Client"] = relationship(back_populates="contracts")
     commercial: Mapped["User"] = relationship(
@@ -22,7 +23,6 @@ class Contract(Base):
         foreign_keys=[commercial_id]
     )
     events: Mapped[List["Event"]] = relationship(back_populates="contract")
-
 
     def __repr__(self) -> str:
         return (

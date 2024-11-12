@@ -1,12 +1,10 @@
-# 2. Gestion des contrats
-#    - Créer un nouveau contrat
-#    - Modifier un contrat existant
+from sqlalchemy.orm import Session
 
-from models import Contract, Role
 from models import ContractManager
+from models import Role
+from views.client_view import ClientView
 from views.contract_view import ContractView
 from views.main_view import MainView
-from sqlalchemy.orm import Session
 
 
 class ContractController:
@@ -15,6 +13,7 @@ class ContractController:
         self.user = user
         self.db = db
 
+    # MANAGEMENT TEAM
     def contract_management_menu(self):
         while True:
             choice = ContractView.show_contract_management_menu()
@@ -30,6 +29,25 @@ class ContractController:
                 case _:
                     print("Option invalide. Veuillez réessayer.")
 
+    # COMMERCIAL TEAM MENU
+    def commercial_contract_menu(self):
+        """Contract management submenu for the Commercial role."""
+        while True:
+            contract_choice = ClientView.show_contract_management_menu()
+            match contract_choice:
+                case "1":
+                    self.list_all_contracts()
+                case "2":
+                    if self.user.role == Role.COMMERCIAL:
+                        self.update_contracts()
+                    else:
+                        MainView.print_error("Accès refusé. Seuls les commerciaux peuvent mettre à jour les contrats.")
+                case "3":
+                    self.filter_contracts()
+                case "b":
+                    break
+                case _:
+                    MainView.print_invalid_input()
 
     def create_contract(self):
         """Create a new contract."""
@@ -85,7 +103,7 @@ class ContractController:
                 MainView.print_error(f"Contract avec ID {contract_id} introuvable.")
                 return
 
-        # Verify if the contract belongs to the current commercial
+            # Verify if the contract belongs to the current commercial
             if existing_contract.commercial_id != self.user.id:
                 MainView.print_error("Vous ne pouvez modifier que vos propres contracts.")
                 return

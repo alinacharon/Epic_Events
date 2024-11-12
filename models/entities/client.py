@@ -1,17 +1,18 @@
 import re
 from typing import List, Optional
+
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
-from models.entities.base import Base, intpk, str_100, str_120, str_20
+from models.entities.base import Base, str_100, str_120, str_20
 
 
 class Client(Base):
-    __tablename__ = 'clients' 
-    
+    __tablename__ = 'clients'
+
     full_name: Mapped[str_100] = mapped_column(nullable=False)
     email: Mapped[str_120] = mapped_column(unique=True, nullable=False)
-    phone: Mapped[Optional[str_20]] 
+    phone: Mapped[Optional[str_20]]
     company_name: Mapped[Optional[str_100]] = mapped_column(nullable=True)
 
     commercial_id: Mapped[int] = mapped_column(ForeignKey("users.id"))

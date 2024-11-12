@@ -1,16 +1,9 @@
 from sqlalchemy.orm import Session
+
 from models import User, Role
-from views.user_view import UserView
-from views.main_view import MainView
 from models import UserManager
-# print("\nGestion des employés:")
-# print("1. Créer un nouvel employé")
-# print("2. Mettre à jour les informations d'un employé")
-# print("3. Liste des employés")
-# print("4. Supprimer un employé")
-# print("b. Retour")
-# choice = input("Choisissez une option : ")
-# return choice
+from views.main_view import MainView
+from views.user_view import UserView
 
 
 class UserController:
@@ -18,6 +11,7 @@ class UserController:
         self.db = db
         self.user_manager = UserManager()
 
+    # MANAGEMENT
     def user_management_menu(self):
         while True:
             choice = UserView.show_user_management_menu()
@@ -55,7 +49,7 @@ class UserController:
             print("\nListe des utilisateurs:")
             for user in users:
                 print(f"ID: {user.id}, Nom: {user.username}, Email: {
-                      user.email}, Rôle: {user.role.name}")
+                user.email}, Rôle: {user.role.name}")
         else:
             print("Aucun utilisateur trouvé.")
 
@@ -92,14 +86,6 @@ class UserController:
             print(f"Utilisateur {username} supprimé avec succès.")
         else:
             print(f"Utilisateur {username} non trouvé.")
-
-    def get_user_by_username(self, username: str) -> User:
-        try:
-            return self.db.query(User).filter(User.username == username).first()
-        except Exception as e:
-            MainView.print_error(
-                f"Erreur lors de la recherche de l'employé : {e}")
-            return None
 
     def login(self, username: str, password: str) -> User:
         try:

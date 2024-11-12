@@ -1,11 +1,14 @@
 from typing import Optional
+
 from sqlalchemy import ForeignKey, Text
-from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import DateTime
-from models.entities.base import Base, intpk, str_255
+
+from models.entities.base import Base, str_255
+
 
 class Event(Base):
-    __tablename__ = 'events' 
+    __tablename__ = 'events'
 
     start_date: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     end_date: Mapped[DateTime] = mapped_column(DateTime, nullable=False)

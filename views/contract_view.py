@@ -1,9 +1,5 @@
-
-# 2. Gestion des contrats
-#    - Créer un nouveau contrat
-#    - Modifier un contrat existant
-
 from typing import Dict, Optional
+
 from models.entities.contract import Contract
 
 
@@ -31,16 +27,16 @@ class ContractView:
         total_amount = float(input("Entrez le montant total : "))
         remaining_amount = float(input("Entrez le montant restant : "))
         signed_input = input("Le contrat est-il signé ? (oui/non) : ")
-        signed = signed_input.lower() == 'oui'  
+        signed = signed_input.lower() == 'oui'
 
         return {
-        "client_id": client_id,
-        "commercial_id": commercial_id,
-        "total_amount": total_amount,
-        "remaining_amount": remaining_amount,
-        "signed": signed
-    }
-    
+            "client_id": client_id,
+            "commercial_id": commercial_id,
+            "total_amount": total_amount,
+            "remaining_amount": remaining_amount,
+            "signed": signed
+        }
+
     @staticmethod
     def display_contract_details(contract: 'Contract') -> None:
         """Displays detailed information about a contract."""
@@ -71,7 +67,7 @@ class ContractView:
             "remaining_amount": float(remaining_amount) if remaining_amount else None,
             "signed": signed if signed_input else None
         }
-        
+
     @staticmethod
     def display_contract_list(contracts):
         """Affiche la liste des contrats."""
@@ -82,5 +78,5 @@ class ContractView:
 
         for contract in contracts:
             print(f"- ID : {contract.id}, Client : {contract.client_id}, Com. ID : {contract.commercial_id}, "
-                f"Montant total : {contract.total_amount}, Restant : {contract.remaining_amount}, "
-                f"Signé : {'Oui' if contract.signed else 'Non'}")
+                  f"Montant total : {contract.total_amount}, Restant : {contract.remaining_amount}, "
+                  f"Signé : {'Oui' if contract.signed else 'Non'}")

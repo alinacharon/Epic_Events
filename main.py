@@ -1,9 +1,11 @@
-from sqlalchemy.orm import sessionmaker
-from controllers.user_controller import UserController
-from controllers.main_controller import MainController
-from config import engine
-from database import init_database
 import logging
+
+from sqlalchemy.orm import sessionmaker
+
+from config import engine
+from controllers.main_controller import MainController
+from controllers.user_controller import UserController
+from database import init_database
 from views.main_view import MainView
 
 # Logging settings

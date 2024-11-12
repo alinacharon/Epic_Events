@@ -1,23 +1,57 @@
-from models import EventManager
+from models import EventManager, Role
+from views.client_view import ClientView
 from views.event_view import EventView
 from views.main_view import MainView
 
-# 3. Gestion des événements
-#    - Créer un événement
-#    - Consulter la liste des événements
-#    - Filtres des événements
-#      * Événements sans support attribué
-#      * Mes événements (selon le rôle)
-#    - Modifier un événement
 
-class EventtController:
+class EventController:
 
-    def __init__(self):
-        database_url = "postgresql://admin:mypassword@localhost/database"
-        self.event_manager = EventManager(database_url)
+    def __init__(self, user, db):
+        self.event_manager = EventManager()
+        self.user = user
+        self.db = db
 
-    def event_menu(self):
-        # Main Event management menu loop
+    # MANAGEMENT TEAM
+    def event_management_menu(self):
+        """Unified event management menu for the MANAGEMENT role with filtering options."""
+        while True:
+            choice = EventView.management_events_menu()
+            match choice:
+                # Основное управление событиями
+                case "1":
+                    self.list_all_events()
+
+                # Переход в меню фильтрации
+                case "2":
+                    filter_choice = EventView.filter_events_menu()
+                    match filter_choice:
+                        case "1":
+                            self.show_unassigned_events()
+                        case "2":
+                            self.show_events_by_date()
+                        case "3":
+                            self.show_events_by_client()
+                        case "b":
+                            continue
+                        case _:
+                            MainView.print_invalid_input()
+
+                # Назначение поддержки
+                case "3":
+                    self.assign_support()
+
+                # Выход из меню
+                case "b":
+                    break
+                case "q":
+                    MainView.print_exit()
+                    exit()
+                case _:
+                    MainView.print_invalid_input()
+                    continue
+
+    # SUPPORT TEAM
+    def event_support_menu(self):
         while True:
             choice = EventView.manage_events_menu()
             match choice:
@@ -26,7 +60,7 @@ class EventtController:
                 case "2":
                     self.list_all_events()
                 case "3":
-                    self.search_events()
+                    self.get_my_events()
                 case "4":
                     self.update_events()
                 case "b":
@@ -37,21 +71,160 @@ class EventtController:
                 case _:
                     MainView.print_invalid_input()
                     continue
-                
-    def event_sub_menu(self):
-        # Sub Event management menu loop
+
+    # COMMERCIAL TEAM MENU
+    def commercial_event_menu(self):
+        """Event management submenu for the Commercial role."""
         while True:
-            choice = EventView.manage_events_menu()
-            match choice:
+            event_choice = ClientView.show_event_management_menu()
+            match event_choice:
                 case "1":
-                    self.get_unassigned_events()
+                    if self.user.role == Role.COMMERCIAL:
+                        self.create_event_for_signed_client()
+                    else:
+                        MainView.print_error("Accès refusé. Seuls les commerciaux peuvent créer des événements.")
                 case "2":
-                    self.get_my_events()
+                    self.list_all_events()
                 case "b":
                     break
-                case "q":
-                    MainView.print_exit()
-                    exit()
                 case _:
                     MainView.print_invalid_input()
-                    continue
+
+    # ALL FUNCTIONS
+
+    def create_event(self):
+        """Create a new event."""
+        try:
+            event_data = EventView.get_event_data()
+            event_data['creator_id'] = self.user.id
+            new_event = self.event_manager.add_event(event_data)
+            MainView.print_success(f"Nouvel événement créé avec succès. ID: {new_event.id}")
+            return new_event
+        except ValueError as e:
+            MainView.print_error(f"Erreur: {e} Veuillez réessayer.")
+
+    def list_all_events(self):
+        """List all events - accessible to all users."""
+        try:
+            events = self.event_manager.get_all_events()
+            EventView.display_event_list(events)
+        except Exception as e:
+            MainView.print_error(f"Erreur lors de la récupération des événements: {e}")
+
+    def update_events(self):
+        """Update an existing event."""
+        try:
+            event_id = EventView.get_event_id()
+            existing_event = self.event_manager.get_event_by_id(event_id)
+
+            if not existing_event:
+                MainView.print_error(f"Événement avec ID {event_id} introuvable.")
+                return
+
+            # Check if user has permission to modify the event
+            if self.user.role != Role.COMMERCIAL and existing_event.creator_id != self.user.id:
+                MainView.print_error("Vous n'avez pas les droits pour modifier cet événement.")
+                return
+
+            EventView.display_event_details(existing_event)
+            updated_data = EventView.get_updated_event_data()
+            updated_event = self.event_manager.update_event(event_id, updated_data)
+
+            if updated_event:
+                MainView.print_success("Les informations de l'événement ont été mises à jour.")
+                EventView.display_event_details(updated_event)
+            else:
+                MainView.print_error("Échec de la mise à jour de l'événement.")
+        except ValueError as e:
+            MainView.print_error(f"Erreur lors de la mise à jour: {e}")
+        except Exception as e:
+            MainView.print_error(f"Une erreur inattendue est survenue: {e}")
+
+    def get_unassigned_events(self):
+        """Get events without assigned support."""
+        try:
+            unassigned_events = self.event_manager.get_unassigned_events()
+            if unassigned_events:
+                EventView.display_event_list(unassigned_events)
+            else:
+                MainView.print_info("Aucun événement sans support trouvé.")
+        except Exception as e:
+            MainView.print_error(f"Erreur lors de la récupération des événements: {e}")
+
+    def get_my_events(self):
+        """Get events associated with the current user based on their role."""
+        try:
+            if self.user.role == Role.SUPPORT:
+                events = self.event_manager.get_events_by_support(self.user.id)
+            elif self.user.role == Role.COMMERCIAL:
+                events = self.event_manager.get_events_by_commercial(self.user.id)
+            else:
+                MainView.print_error("Rôle non autorisé pour cette opération.")
+                return
+
+            if events:
+                EventView.display_event_list(events)
+            else:
+                MainView.print_info("Aucun événement trouvé.")
+        except Exception as e:
+            MainView.print_error(f"Erreur lors de la récupération des événements: {e}")
+
+    def show_unassigned_events(self):
+        """Show events without assigned support."""
+        try:
+            events = self.event_manager.get_unassigned_events()
+            EventView.display_event_list(events)
+        except Exception as e:
+            MainView.print_error(f"Erreur lors de la récupération des événements: {e}")
+
+    def assign_support(self):
+        """Assign support employee to an event."""
+        try:
+            # First show unassigned events
+            events = self.event_manager.get_unassigned_events()
+            if not events:
+                MainView.print_info("Aucun événement sans support trouvé.")
+                return
+
+            EventView.display_event_list(events)
+
+            # Show available support employees
+            support_users = self.event_manager.get_available_support_users()
+            if not support_users:
+                MainView.print_error("Aucun employé support disponible.")
+                return
+
+            EventView.display_support_list(support_users)
+
+            # Get assignment data
+            event_id, support_id = EventView.get_support_assignment_data()
+
+            # Confirm assignment
+            if EventView.confirm_assignment():
+                if self.event_manager.assign_support_to_event(event_id, support_id):
+                    EventView.display_assignment_success(event_id, support_id)
+                else:
+                    MainView.print_error("Échec de l'attribution du support.")
+        except ValueError as e:
+            MainView.print_error(f"Erreur de saisie: {e}")
+        except Exception as e:
+            MainView.print_error(f"Une erreur est survenue: {e}")
+
+    def show_events_by_date(self):
+        """Show events filtered by date range."""
+        try:
+            start_date = MainView.get_date_input("Date de début (YYYY-MM-DD): ")
+            end_date = MainView.get_date_input("Date de fin (YYYY-MM-DD): ")
+            events = self.event_manager.get_events_by_date_range(start_date, end_date)
+            EventView.display_event_list(events)
+        except Exception as e:
+            MainView.print_error(f"Erreur lors de la récupération des événements: {e}")
+
+    def show_events_by_client(self):
+        """Show events filtered by client."""
+        try:
+            client_id = input("ID du client: ").strip()
+            events = self.event_manager.get_events_by_client(client_id)
+            EventView.display_event_list(events)
+        except Exception as e:
+            MainView.print_error(f"Erreur lors de la récupération des événements: {e}")

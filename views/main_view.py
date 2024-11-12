@@ -19,14 +19,14 @@ class MainView:
     @staticmethod
     def print_info(info):
         print(info)
-        
-# Menus depending on roles
 
-    # MANAGEMENT
+    # Menus depending on roles
+
+    # MANAGEMENT MENU
 
     @classmethod
     def show_management_menu(cls):
-        print("\nMenu Administrateur:")
+        print("\nMenu Administrateur:\n")
         print("1. Gestion des employés")
         print("2. Gestion des contrats")
         print("3. Gestion des événements")
@@ -35,17 +35,28 @@ class MainView:
         choice = input("Enter your choice: ")
         return choice
 
-    # COMMERCIAL
-
+    # COMMERCIAL MENU
     @classmethod
     def show_commercial_menu(cls):
-        print("\nCommercial Menu:")
+        print("\nMenu Commercial:\n")
+        print("1. Gestion des clients")
+        print("2. Gestion des contracts")
+        print("3. Gestion des événements")
+        print("b. Retourner")
         print("q. Quitter")
+        choice = input("Choisissez une option : ")
+        return choice
 
-    # SUPPORT
-
+    # SUPPORT MENU
     @classmethod
     def show_support_menu(cls):
-        print("\nSupport Menu:")
+        print("\nMenu Support:\n")
+        print("1. Voir les événements assignés")
+        print("2. Mettre à jour les informations des événements assignés")
+        print(
+            "3. Filtrer les événements (par exemple, uniquement ceux qui me sont assignés)")
+        print("4. Voir les clients")
+        print("5. Voir les contrats")
         print("q. Quitter")
-  
+        choice = input("Choisissez une option : ")
+        return choice

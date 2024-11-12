@@ -6,8 +6,9 @@ class ClientView:
         print("\nMenu de gestion des clients:")
         print("1. Créer un nouveau client")
         print("2. Voir la liste de tous les clients")
-        print("3. Rechercher/filtrer des clients")
-        print("4. Modifier les informations d'un client")
+        print("3. Voir mes clients")
+        print("4. Trouver un client")
+        print("5. Modifier les informations d'un client")
         print("b. Retour au menu principal")
         print("q. Quitter")
         return input("Choisissez une option : ").strip()
@@ -20,15 +21,8 @@ class ClientView:
         email = input("Adresse e-mail : ").strip()
         phone = input("Téléphone : ").strip()
         company_name = input("Nom de l'entreprise : ").strip()
-        commercial_contact = input("Contact commercial : ").strip()
 
-        return {
-            "full_name": full_name,
-            "email": email,
-            "phone": phone,
-            "company_name": company_name,
-            "commercial_contact": commercial_contact
-        }
+        return full_name, email, phone, company_name
 
     @staticmethod
     def display_client_list(client_list):
@@ -38,8 +32,9 @@ class ClientView:
             print("Aucun client trouvé.")
             return
         for client in client_list:
+            commercial_username = client.commercial.username if client.commercial else "Non attribué"
             print(f"- {client.id}: {client.full_name}, Email : {client.email}, "
-                f"Entreprise : {client.company_name}, Téléphone : {client.phone}")
+                  f"Entreprise : {client.company_name}, Téléphone : {client.phone}, Commercial : {commercial_username}")
 
     @staticmethod
     def search_criteria():
@@ -59,14 +54,14 @@ class ClientView:
     def display_client_details(client):
         """Displays detailed information about a client."""
         print("\nInformations sur le client :")
-        print(f"ID : {client['id']}")
-        print(f"Nom complet : {client['full_name']}")
-        print(f"Adresse e-mail : {client['email']}")
-        print(f"Téléphone : {client['phone']}")
-        print(f"Entreprise : {client['company_name']}")
-        print(f"Date de création : {client['creation_date']}")
-        print(f"Dernière mise à jour : {client['last_updated']}")
-        print(f"Contact commercial : {client['commercial_contact']}")
+        print(f"ID : {client.id}")
+        print(f"Nom complet : {client.full_name}")
+        print(f"Adresse e-mail : {client.email}")
+        print(f"Téléphone : {client.phone}")
+        print(f"Entreprise : {client.company_name}")
+        print(f"Date de création : {client.created_at}")
+        print(f"Dernière mise à jour : {client.updated_at}")
+        print(f"Contact commercial : {client.commercial.username}")
 
     @staticmethod
     def get_client_id():
