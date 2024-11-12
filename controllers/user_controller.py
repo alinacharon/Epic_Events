@@ -83,15 +83,14 @@ class UserController:
         if user:
             self.db.delete(user)
             self.db.commit()
-            print(f"Utilisateur {username} supprimé avec succès.")
+            MainView.print_success(f"Utilisateur {username} supprimé avec succès.")
         else:
-            print(f"Utilisateur {username} non trouvé.")
+            MainView.print_error(f"Utilisateur {username} non trouvé.")
 
     def login(self, username: str, password: str) -> User:
         try:
-            user = self.db.query(User).filter(
-                User.username == username).first()
-            if user:
+            user = self.db.query(User).filter(User.username == username).first()
+            if user and self.user_manager.verify_password(password, user.password): 
                 MainView.print_info(
                     f"L'utilisateur {username} s'est connecté avec succès.")
                 return user
