@@ -1,23 +1,22 @@
 import logging
-
+import sentry_sdk
 from sqlalchemy.orm import sessionmaker
-
 from config import engine
 from controllers.main_controller import MainController
-from controllers.user_controller import UserController
 from database import init_database
 from views.main_view import MainView
 
-# Logging settings
+# Настройка логирования
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+# logging.disable(logging.CRITICAL)
 
-# Session maker
+# Создаем фабрику сессий
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 def init_app():
-    """DB inisialization"""
+    """Инициализация базы данных"""
     try:
         init_database()
         logger.info("Database initialized successfully")
@@ -27,69 +26,51 @@ def init_app():
 
 
 def get_db():
-    """Session from DB"""
+    """Создаем сессию из БД"""
     db = SessionLocal()
     try:
-        yield db
+        return db
+    except Exception as e:
+        logger.error(f"Error while creating session: {e}")
+        raise
     finally:
         db.close()
 
 
 def main():
     init_app()
+    sentry_sdk.capture_message("Проверка подключения Sentry!")
 
-    # Session generation
-    db_generator = get_db()
-    db = next(db_generator)
+    db = get_db()  # Получаем сессию
 
     try:
-        user_controller = UserController(db)
+        main_controller = MainController(user=None, db=db) 
+        user = None  
 
-        while True:
-            print("\n1. Connexion")
-            print("q. Quitter")
-            choice = input("Choisissez une action : ")
-            match choice:
-
-                case '1':
-                    # Login
-                    username = input("Entrez le nom d'utilisateur : ")
-                    # Запрос пароля
-                    password = input("Entrez le mot de passe : ")
-                    user = user_controller.login(
-                        username, password)  # Используем метод login
-                    if user:
-                        MainView.print_success("Connexion réussie !")
-                        open_main_menu(user, db)
-                    else:
-                        logger.warning(
-                            f"Failed login attempt for username: {username}")
-                        MainView.print_error(
-                            "Utilisateur non trouvé ou mot de passe incorrect.")
-
-                case 'q':
-                    MainView.print_exit()
-                    break
-
-                case _:
-                    MainView.print_invalid_input()
-                    continue
+        while user is None:  
+            choice = MainView.show_login_page() 
+            if choice == '1':
+                username, password = MainView.get_user_login_info()  
+                user = main_controller.login(username, password)  
+                if user:
+                    MainView.print_success("Connexion réussie !")
+                    main_controller.user = user  
+                    main_controller.main_menu(user)
+                else:
+                    MainView.print_error("Utilisateur non trouvé ou mot de passe incorrect.")
+            elif choice == 'q':
+                MainView.print_exit()
+                quit()
+            else:
+                MainView.print_invalid_input()
 
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         print("Une erreur s'est produite. Veuillez réessayer plus tard.")
 
     finally:
-        next(db_generator, None)  # Session closure
-
-
-def open_main_menu(user, db):
-    try:
-        app = MainController(user, db)
-        app.main_menu(user.role)
-    except Exception as e:
-        logger.error(f"Error in main menu: {e}")
-        print("Une erreur s'est produite dans le menu principal.")
+        if db:
+            db.close()
 
 
 if __name__ == "__main__":

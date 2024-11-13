@@ -1,16 +1,17 @@
 from sqlalchemy.orm import Session
-
-from models import User, Role
-from models import UserManager
+from models import User, Role, UserManager
 from views.main_view import MainView
 from views.user_view import UserView
 
 
+
 class UserController:
-    def __init__(self, db: Session):
+    def __init__(self,user, db: Session):
+        self.user = user
         self.db = db
         self.user_manager = UserManager()
 
+   
     # MANAGEMENT
     def user_management_menu(self):
         while True:
@@ -27,7 +28,7 @@ class UserController:
                 case 'b':
                     break
                 case _:
-                    print("Option invalide. Veuillez réessayer.")
+                    MainView.print_invalid_input()
 
     def create_user(self):
         username, email, role, password = UserView.get_user_info()
@@ -35,21 +36,18 @@ class UserController:
             role_enum = Role[role.upper()]
             new_user = self.user_manager.add_user(
                 self.db, username, email, role_enum, password)
-            MainView.print_success(
-                f"Utilisateur {new_user.username} créé avec succès.")
+            MainView.print_success(f"Utilisateur {new_user.username} créé avec succès.")
         except ValueError as ve:
             MainView.print_error(ve)
         except Exception as e:
-            MainView.print_error(
-                f"Erreur lors de la création de l'utilisateur : {e}")
+            MainView.print_error(f"Erreur lors de la création de l'utilisateur : {e}")
 
     def list_users(self):
         users = self.db.query(User).all()
         if users:
             print("\nListe des utilisateurs:")
             for user in users:
-                print(f"ID: {user.id}, Nom: {user.username}, Email: {
-                user.email}, Rôle: {user.role.name}")
+                print(f"ID: {user.id}, Nom: {user.username}, Email: {user.email}, Rôle: {user.role.name}")
         else:
             print("Aucun utilisateur trouvé.")
 
@@ -87,17 +85,3 @@ class UserController:
         else:
             MainView.print_error(f"Utilisateur {username} non trouvé.")
 
-    def login(self, username: str, password: str) -> User:
-        try:
-            user = self.db.query(User).filter(User.username == username).first()
-            if user and self.user_manager.verify_password(password, user.password): 
-                MainView.print_info(
-                    f"L'utilisateur {username} s'est connecté avec succès.")
-                return user
-            else:
-                MainView.print_error(
-                    f"Échec de la connexion pour l'utilisateur {username}.")
-                return None
-        except Exception as e:
-            MainView.print_error(f"Erreur lors de la connexion : {e}")
-            return None

@@ -28,8 +28,7 @@ class Contract(Base):
         return (
             f"Contract(id={self.id!r}, "
             f"client_id={self.client_id!r}, "
-            f"commercial_contact_id={self.commercial_contact_id!r}, "
             f"total_amount={self.total_amount!r}, "
-            f"amount_remaining={self.amount_remaining!r}, "
-            f"is_signed={self.is_signed!r})"
+            f"remaining_amount={self.remaining_amount!r}, "
+            f"signed={self.signed!r})"
         )

@@ -33,17 +33,21 @@ class ContractController:
     def commercial_contract_menu(self):
         """Contract management submenu for the Commercial role."""
         while True:
-            contract_choice = ClientView.show_contract_management_menu()
+            contract_choice = ContractView.show_commercial_management_menu()
             match contract_choice:
                 case "1":
                     self.list_all_contracts()
                 case "2":
                     if self.user.role == Role.COMMERCIAL:
-                        self.update_contracts()
+                        self.update_contract()
                     else:
                         MainView.print_error("Accès refusé. Seuls les commerciaux peuvent mettre à jour les contrats.")
                 case "3":
-                    self.filter_contracts()
+                    self.list_my_contracts()
+                case "4":
+                    self.show_unsigned_contracts()
+                case "5":
+                    self.show_not_fully_paid_contracts()
                 case "b":
                     break
                 case _:
@@ -114,8 +118,8 @@ class ContractController:
                 updated_contract = self.contract_manager.update_contract(contract_id, updated_data)
 
                 if updated_contract:
+                    session.commit()
                     MainView.print_success("Les informations du contract ont été mises à jour.")
-                    ContractView.display_contract_details(updated_contract)
                 else:
                     MainView.print_error("Échec de la mise à jour du contract.")
             except ValueError as e:
@@ -134,3 +138,23 @@ class ContractController:
                 MainView.print_error(f"Contract avec ID {contract_id} introuvable.")
         except Exception as e:
             MainView.print_error(f"Erreur lors de la récupération des détails du contract: {e}")
+
+    def show_unsigned_contracts(self):
+        """Display unsigned contracts."""
+        unsigned_contracts = self.contract_manager.get_unsigned_contracts()
+        if not unsigned_contracts:
+            print("Aucun contrat non signé.")  # No unsigned contracts.
+        else:
+            print("Contrats non signés :")  # Unsigned contracts:
+            for contract in unsigned_contracts:
+                print(f"ID du contrat : {contract.id}, Montant total : {contract.total_amount}, Montant restant : {contract.remaining_amount}")
+
+    def show_not_fully_paid_contracts(self):
+        """Display contracts that are not fully paid."""
+        not_fully_paid_contracts = self.contract_manager.get_not_fully_paid_contracts()
+        if not not_fully_paid_contracts:
+            MainView.print_error("Aucun contrat qui n'est pas entièrement payé.")  # No contracts that are not fully paid.
+        else:
+            MainView.print_info("Contrats qui ne sont pas entièrement payés :")  # Contracts that are not fully paid:
+            for contract in not_fully_paid_contracts:
+                MainView.print_info(f"ID du contrat : {contract.id}, Montant total : {contract.total_amount}, Montant restant : {contract.remaining_amount}")

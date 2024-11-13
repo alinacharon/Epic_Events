@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, joinedload
 
 from config import engine
 from models import Event, User, Role
@@ -10,18 +10,15 @@ class EventManager:
     def __init__(self):
         self.Session = sessionmaker(bind=engine)
 
-    def add_event(self, event_data):
-        """Create a new event."""
-        with self.Session() as session:
-            # Validate dates
-            if event_data['end_date'] < event_data['start_date']:
-                raise ValueError("La date de fin ne peut pas être antérieure à la date de début.")
+    def add_event(self, event_data, session):
+        # Validate dates
+        if event_data['end_date'] < event_data['start_date']:
+            raise ValueError("La date de fin ne peut pas être antérieure à la date de début.")
 
-            # Create and validate the event
-            event = Event(**event_data)
-            session.add(event)
-            session.commit()
-            return event
+        # Create and validate the event
+        event = Event(**event_data)
+        session.add(event)
+        return event
 
     def get_all_events(self):
         """Get all events."""
@@ -31,7 +28,7 @@ class EventManager:
     def get_event_by_id(self, event_id):
         """Get an event by its ID."""
         with self.Session() as session:
-            return session.query(Event).get(event_id)
+            return session.query(Event).options(joinedload(Event.contract)).get(event_id)
 
     def get_events_by_client(self, client_id):
         """Get all events for a specific client."""
@@ -52,12 +49,6 @@ class EventManager:
                 Event.support_contact_id == None
             ).all()
 
-    def get_events_by_contract(self, contract_id):
-        """Get all events associated with a specific contract."""
-        with self.Session() as session:
-            return session.query(Event).filter(
-                Event.contract_id == contract_id
-            ).all()
 
     def update_event(self, event_id, updated_data):
         """Update an existing event."""
@@ -116,9 +107,9 @@ class EventManager:
             if "client_id" in search_criteria:
                 query = query.filter(Event.client_id == search_criteria['client_id'])
 
-            if "contract_id" in search_criteria:
+            if "contract" in search_criteria:
                 query = query.filter(
-                    Event.contract_id == search_criteria['contract_id']
+                    Event.contract == search_criteria['contract']
                 )
 
             if "support_contact_id" in search_criteria:

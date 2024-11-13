@@ -27,16 +27,24 @@ class ContractManager:
             query = session.query(Contract)
 
             if "client_id" in search_criteria:
-                query = query.filter(Contract.client_id.ilike(f"%{search_criteria['client_id']}%"))
+                query = query.filter(Contract.client_id.ilike(
+                    f"%{search_criteria['client_id']}%"))
 
             if "client" in search_criteria:
-                query = query.join(Client).filter(Client.full_name.ilike(f"%{search_criteria['client']}%"))
+                query = query.join(Client).filter(
+                    Client.full_name.ilike(f"%{search_criteria['client']}%"))
 
             return query.all()
 
-    def get_contract_by_id(self, contract_id):
+    def get_contract_by_id(self, contract_id, session):
         with self.Session() as session:
             return session.query(Contract).get(contract_id)
+
+    def get_contracts_by_commercial(self, commercial_id):
+        with self.Session() as session:
+            contracts = session.query(Contract).filter(
+                Contract.commercial_id == commercial_id).all()
+            return contracts
 
     def update_contract(self, contract_id, updated_data):
         with self.Session() as session:
@@ -51,3 +59,13 @@ class ContractManager:
             contract.last_updated = datetime.now()
             session.commit()
             return contract
+
+    def get_unsigned_contracts(self):
+        """Получить все неподписанные контракты."""
+        with self.Session() as session:
+            return session.query(Contract).filter(Contract.signed == False).all()
+
+    def get_not_fully_paid_contracts(self):
+        """Получить все контракты, которые не полностью оплачены."""
+        with self.Session() as session:
+            return session.query(Contract).filter(Contract.remaining_amount > 0).all()

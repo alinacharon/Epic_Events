@@ -67,18 +67,15 @@ class ClientManager:
             return client
 
     def update_client(self, client_id, updated_data):
-        """Обновить данные клиента по ID."""
+        """Update client with his ID."""
         with self.Session() as session:
             client = session.query(Client).get(client_id)
             if not client:
                 return None
-
-                # Обновляем поля клиента
+                
             for key, value in updated_data.items():
                 if value is not None:
                     setattr(client, key, value)
-
-            # Устанавливаем время последнего обновления
-            client.updated_at = datetime.now()
+                    
             session.commit()
             return client

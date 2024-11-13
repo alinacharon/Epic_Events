@@ -1,3 +1,6 @@
+import pwinput
+
+
 class MainView:
     @staticmethod
     def print_success(info):
@@ -20,6 +23,20 @@ class MainView:
     def print_info(info):
         print(info)
 
+
+    # Connection menu
+    @classmethod
+    def show_login_page(cls):
+        print("\n1. Connexion")
+        print("q. Quitter")
+        choice = input("Choisissez une action : ")
+        return choice
+
+    @classmethod
+    def get_user_login_info(cls):
+        username = input("Entrez le nom d'utilisateur : ")
+        password = pwinput.pwinput("Entrez le mot de passe : ", mask="*")
+        return username, password
     # Menus depending on roles
 
     # MANAGEMENT MENU
@@ -51,12 +68,9 @@ class MainView:
     @classmethod
     def show_support_menu(cls):
         print("\nMenu Support:\n")
-        print("1. Voir les événements assignés")
-        print("2. Mettre à jour les informations des événements assignés")
-        print(
-            "3. Filtrer les événements (par exemple, uniquement ceux qui me sont assignés)")
-        print("4. Voir les clients")
-        print("5. Voir les contrats")
-        print("q. Quitter")
+        print("1. Gestion des événements")
+        print("2. Voir les clients")
+        print("3. Voir les contrats")
+        print("4. Quitter")
         choice = input("Choisissez une option : ")
         return choice

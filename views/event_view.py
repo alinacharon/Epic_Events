@@ -16,14 +16,26 @@ class EventView:
         return input("Choisissez une option : ").strip()
 
     # SUPPORT TEAM
+
     @classmethod
     def support_events_menu(cls):
-        """Display the main event management menu."""
-        print("\nGestion des événements:")
-        print("1. Créer un nouvel événement")
-        print("2. Voir tous les événements")
-        print("3. Rechercher des événements")
-        print("4. Modifier un événement")
+        """Отображает меню для роли SUPPORT."""
+        print("\nGestion des événements (Support) :")
+        print("1. Voir les événements assignés")
+        print("2. Mettre à jour les informations des événements assignés")
+        print("3. Filtrer les événements (par exemple, uniquement ceux qui me sont assignés)")
+        print("b. Retour")
+        print("q. Quitter")
+        return input("Choisissez une option : ").strip()
+    
+    #COMMERCIAL MENU 
+    
+    @classmethod
+    def commercial_events_menu(cls):
+        """Отображает меню для роли COMMERCIAL."""
+        print("\nGestion des événements (Commerciale):")
+        print("1. Créer un nouvel événement pour un client avec un contrat signé")
+        print("2. Voir les événements")
         print("b. Retour")
         print("q. Quitter")
         return input("Choisissez une option : ").strip()
@@ -42,7 +54,8 @@ class EventView:
     def get_event_id():
         """Get event ID from user input."""
         return input("Entrez l'ID de l'événement : ").strip()
-
+    
+    
     @staticmethod
     def parse_date(date_str: str) -> datetime:
         """Parse date string to datetime object."""
@@ -50,6 +63,7 @@ class EventView:
             return datetime.strptime(date_str, "%Y-%m-%d %H:%M")
         except ValueError:
             raise ValueError("Format de date invalide. Utilisez YYYY-MM-DD HH:MM")
+    
 
     @classmethod
     def get_event_data(cls):
@@ -61,8 +75,6 @@ class EventView:
             location = input("Lieu : ")
             num_attendees = int(input("Nombre de participants : "))
             notes = input("Notes (optionnel) : ")
-            contract_id = int(input("ID du contrat : "))
-            client_id = int(input("ID du client : "))
             support_contact_id = int(input("ID du contact support : "))
 
             return {
@@ -71,8 +83,6 @@ class EventView:
                 "location": location,
                 "num_attendees": num_attendees,
                 "notes": notes if notes else None,
-                "contract_id": contract_id,
-                "client_id": client_id,
                 "support_contact_id": support_contact_id
             }
         except ValueError as e:

@@ -9,15 +9,28 @@ class ContractView:
         print("\nGestion des contrats:")
         print("1. Créer un nouveau contrat")
         print("2. Modifier un contrat existant")
-        print("3.Voir tous le contrats")
+        print("3. Voir tous les contrats")
         print("b. Retour")
         choice = input("Choisissez une option : ")
         return choice
 
+    @classmethod
+    def show_commercial_management_menu(cls):
+ 
+        print("\nGestion des contrats:\n")
+        print("1. Voir tous les contrats")
+        print("2. Mettre à jour les contrats de mes clients")
+        print("3. Voir mes contrats")
+        print("4. Voir contrats non signé")
+        print("5. Voir contrats non payés")
+        print("b. Retour")
+        choice = input("Choisissez une option : ")
+        return choice
+   
     @staticmethod
     def get_contract_id():
-        """Prompts for the contract ID to search or edit."""
-        return input("Entrez le ID de contract : ").strip()
+        """Get contract ID from user input."""
+        return input("Entrez le ID de contrat : ").strip()
 
     @classmethod
     def get_contract_data(cls):
@@ -57,7 +70,8 @@ class ContractView:
         total_amount = input("Montant total : ")
         remaining_amount = input("Montant restant : ")
         signed_input = input("Le contrat est-il signé ? (oui/non) : ")
-        signed = signed_input.lower() == 'oui' if signed_input else None  # Преобразуем ввод в булевый тип
+        # Преобразуем ввод в булевый тип
+        signed = signed_input.lower() == 'oui' if signed_input else None
 
         # Return a dictionary with updated data or None if no new input is provided
         return {
@@ -78,5 +92,6 @@ class ContractView:
 
         for contract in contracts:
             print(f"- ID : {contract.id}, Client : {contract.client_id}, Com. ID : {contract.commercial_id}, "
-                  f"Montant total : {contract.total_amount}, Restant : {contract.remaining_amount}, "
+                  f"Montant total : {contract.total_amount}, Restant : {
+                      contract.remaining_amount}, "
                   f"Signé : {'Oui' if contract.signed else 'Non'}")

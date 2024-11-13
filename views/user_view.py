@@ -1,4 +1,5 @@
 class UserView:
+
     @classmethod
     def show_user_management_menu(cls):
         print("\nGestion des employés:")
