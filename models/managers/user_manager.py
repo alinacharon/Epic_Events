@@ -42,36 +42,25 @@ class UserManager:
             username=username,
             email=email,
             role=role,
-            password=hashed_password  # Сохраняем хешированный пароль
+            password=hashed_password
         )
 
-        try:
-            db.add(new_user)
-            db.commit()
-            return new_user
-        except Exception as e:
-            db.rollback()
-            raise ValueError(f"Error creating user: {str(e)}")
-
-    def authenticate_user(self, db: Session, username: str, password: str) -> User:
-        user = db.query(User).filter(User.username == username).first()
-        if user and self.verify_password(password, user.password):
-            return user
-        return None
+        db.add(new_user)
+        return new_user
 
     def get_user_by_id(self, user_id):
         with self.Session() as session:
             return session.query(User).get(user_id)
 
-    def update_user(self, user_id, updated_data):
-        with self.Session() as session:
-            user = session.query(User).get(user_id)
-            if not user:
-                return False
+    def update_user(self, session, user_id, updated_data):
+        """Update an existing user."""
+        user = session.query(User).get(user_id)
+        if not user:
+            return False
 
-            for key, value in updated_data.items():
-                if value is not None:
-                    setattr(user, key, value)
+        for key, value in updated_data.items():
+            if value is not None:
+                setattr(user, key, value)
 
-            session.commit()
-            return user
+        session.commit()
+        return user

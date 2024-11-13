@@ -2,14 +2,14 @@ from controllers.client_controller import ClientController
 from controllers.contract_controller import ContractController
 from controllers.event_controller import EventController
 from controllers.user_controller import UserController
-from views.main_view import MainView
 from models import User, UserManager
+from views.main_view import MainView
+
 
 class MainController:
     def __init__(self, user, db):
         self.user = user
         self.db = db
-
 
     def login(self, username: str, password: str) -> User:
         try:
@@ -54,7 +54,7 @@ class MainController:
             choice = MainView.show_management_menu()
             match choice:
                 case '1':
-                    user_controller = UserController(self.user,self.db)
+                    user_controller = UserController(self.user, self.db)
                     user_controller.user_management_menu()
                 case '2':
                     contract_controller = ContractController(self.user, self.db)
@@ -104,11 +104,11 @@ class MainController:
                 case '2':
                     # Просмотр клиентов
                     client_controller = ClientController(self.user, self.db)
-                    client_controller.view_clients()
+                    client_controller.list_all_clients()
                 case '3':
                     # Просмотр контрактов
                     contract_controller = ContractController(self.user, self.db)
-                    contract_controller.view_contracts()
+                    contract_controller.list_all_contracts()
                 case 'q':
                     MainView.print_exit()
                     quit()

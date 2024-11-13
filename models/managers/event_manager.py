@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 from sqlalchemy.orm import sessionmaker, joinedload
 
 from config import engine
@@ -49,6 +47,12 @@ class EventManager:
                 Event.support_contact_id == None
             ).all()
 
+    def get_assigned_events(self):
+        """Get all events without an assigned support contact."""
+        with self.Session() as session:
+            return session.query(Event).filter(
+                Event.support_contact_id != None
+            ).all()
 
     def update_event(self, event_id, updated_data):
         """Update an existing event."""
@@ -71,73 +75,6 @@ class EventManager:
 
             session.commit()
             return True
-
-    def delete_event(self, event_id):
-        """Delete an event."""
-        with self.Session() as session:
-            event = session.query(Event).get(event_id)
-            if not event:
-                return False
-
-            session.delete(event)
-            session.commit()
-            return True
-
-    def search_events(self, search_criteria):
-        """Search events based on various criteria."""
-        with self.Session() as session:
-            query = session.query(Event)
-
-            if "location" in search_criteria:
-                query = query.filter(
-                    Event.location.ilike(f"%{search_criteria['location']}%")
-                )
-
-            if "start_date" in search_criteria:
-                query = query.filter(Event.start_date >= search_criteria['start_date'])
-
-            if "end_date" in search_criteria:
-                query = query.filter(Event.end_date <= search_criteria['end_date'])
-
-            if "num_attendees" in search_criteria:
-                query = query.filter(
-                    Event.num_attendees == search_criteria['num_attendees']
-                )
-
-            if "client_id" in search_criteria:
-                query = query.filter(Event.client_id == search_criteria['client_id'])
-
-            if "contract" in search_criteria:
-                query = query.filter(
-                    Event.contract == search_criteria['contract']
-                )
-
-            if "support_contact_id" in search_criteria:
-                query = query.filter(
-                    Event.support_contact_id == search_criteria['support_contact_id']
-                )
-
-            return query.all()
-
-    def assign_support_contact(self, event_id, support_contact_id):
-        """Assign a support contact to an event."""
-        with self.Session() as session:
-            event = session.query(Event).get(event_id)
-            if not event:
-                return False
-
-            event.support_contact_id = support_contact_id
-            session.commit()
-            return True
-
-    def get_upcoming_events(self, days=30):
-        """Get events scheduled to occur within the specified number of days."""
-        with self.Session() as session:
-            future_date = datetime.now() + timedelta(days=days)
-            return session.query(Event).filter(
-                Event.start_date <= future_date,
-                Event.start_date >= datetime.now()
-            ).order_by(Event.start_date).all()
 
     def assign_support_to_event(self, event_id, support_id):
         """Assign a support employee to an event."""

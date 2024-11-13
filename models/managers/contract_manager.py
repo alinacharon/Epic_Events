@@ -21,21 +21,6 @@ class ContractManager:
         with self.Session() as session:
             return session.query(Contract).all()
 
-    def search_contracts(self, search_criteria):
-        """Search for contracts based on the given criteria."""
-        with self.Session() as session:
-            query = session.query(Contract)
-
-            if "client_id" in search_criteria:
-                query = query.filter(Contract.client_id.ilike(
-                    f"%{search_criteria['client_id']}%"))
-
-            if "client" in search_criteria:
-                query = query.join(Client).filter(
-                    Client.full_name.ilike(f"%{search_criteria['client']}%"))
-
-            return query.all()
-
     def get_contract_by_id(self, contract_id, session):
         with self.Session() as session:
             return session.query(Contract).get(contract_id)

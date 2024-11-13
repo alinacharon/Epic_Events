@@ -85,17 +85,6 @@ class ContractController:
         except Exception as e:
             MainView.print_error(f"Erreur lors de la récupération de vos contracts: {e}")
 
-    def search_contracts(self):
-        """Search contracts based on criteria."""
-        try:
-            search_criteria = ContractView.search_criteria()
-            matched_contracts = self.contract_manager.search_contracts(search_criteria)
-            if matched_contracts:
-                ContractView.display_contract_list(matched_contracts)
-            else:
-                MainView.print_error("Aucun contract correspondant trouvé.")
-        except Exception as e:
-            MainView.print_error(f"Erreur lors de la recherche: {e}")
 
     def update_contract(self):
         """Update an existing contract."""
@@ -127,27 +116,16 @@ class ContractController:
             except Exception as e:
                 MainView.print_error(f"Une erreur inattendue est survenue: {e}")
 
-    def view_contract_details(self):
-        """View detailed information about a contract - accessible to all users."""
-        try:
-            contract_id = ContractView.get_contract_id()
-            contract = self.contract_manager.get_contract_by_id(contract_id)
-            if contract:
-                ContractView.display_contract_details(contract)
-            else:
-                MainView.print_error(f"Contract avec ID {contract_id} introuvable.")
-        except Exception as e:
-            MainView.print_error(f"Erreur lors de la récupération des détails du contract: {e}")
 
     def show_unsigned_contracts(self):
         """Display unsigned contracts."""
         unsigned_contracts = self.contract_manager.get_unsigned_contracts()
         if not unsigned_contracts:
-            print("Aucun contrat non signé.")  # No unsigned contracts.
+            MainView.print_error("Aucun contrat non signé.")  # No unsigned contracts.
         else:
-            print("Contrats non signés :")  # Unsigned contracts:
+            MainView.print_info("Contrats non signés :")  # Unsigned contracts:
             for contract in unsigned_contracts:
-                print(f"ID du contrat : {contract.id}, Montant total : {contract.total_amount}, Montant restant : {contract.remaining_amount}")
+                MainView.print_info(f"ID du contrat : {contract.id}, Montant total : {contract.total_amount}, Montant restant : {contract.remaining_amount}")
 
     def show_not_fully_paid_contracts(self):
         """Display contracts that are not fully paid."""

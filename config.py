@@ -19,7 +19,7 @@ sentry_sdk.init(
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for tracing.
     traces_sample_rate=1.0,
-    #debug=True
+    # debug=True
 )
 
 # Manually call start_profiler and stop_profiler
@@ -30,6 +30,7 @@ sentry_sdk.profiler.start_profiler()
 # Calls to stop_profiler are optional - if you don't stop the profiler, it will keep profiling
 # your application until the process exits or stop_profiler is called.
 sentry_sdk.profiler.stop_profiler()
+
 
 # Engine creation
 
