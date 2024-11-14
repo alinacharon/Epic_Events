@@ -98,15 +98,12 @@ class MainController:
             choice = MainView.show_support_menu()
             match choice:
                 case '1':
-                    # Меню для управления событиями
                     event_controller = EventController(self.user, self.db)
                     event_controller.event_support_menu()
                 case '2':
-                    # Просмотр клиентов
                     client_controller = ClientController(self.user, self.db)
                     client_controller.list_all_clients()
                 case '3':
-                    # Просмотр контрактов
                     contract_controller = ContractController(self.user, self.db)
                     contract_controller.list_all_contracts()
                 case 'q':

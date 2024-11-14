@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from sqlalchemy.orm import sessionmaker, joinedload
 
 from config import engine
@@ -62,7 +60,6 @@ class ClientManager:
     def get_client_by_id(self, client_id):
         """Получить клиента по ID с загрузкой связанных данных."""
         with self.Session() as session:
-            # Используем `joinedload`, чтобы сразу загрузить связанный объект commercial
             client = session.query(Client).options(joinedload(Client.commercial)).get(client_id)
             return client
 

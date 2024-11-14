@@ -43,7 +43,7 @@ class MainView:
 
     @classmethod
     def show_management_menu(cls):
-        print("\nMenu Administrateur:\n")
+        print("\nMenu Gestion :\n")
         print("1. Gestion des employés")
         print("2. Gestion des contrats")
         print("3. Gestion des événements")
@@ -59,7 +59,6 @@ class MainView:
         print("1. Gestion des clients")
         print("2. Gestion des contracts")
         print("3. Gestion des événements")
-        print("b. Retourner")
         print("q. Quitter")
         choice = input("Choisissez une option : ")
         return choice

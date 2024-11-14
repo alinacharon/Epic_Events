@@ -57,7 +57,6 @@ class ClientController:
     def list_all_clients(self):
         """List all clients - accessible to all users."""
         try:
-            # Подгружаем информацию о коммерческом представителе для каждого клиента
             clients = self.client_manager.get_all_clients()
             ClientView.display_client_list(clients)
         except Exception as e:

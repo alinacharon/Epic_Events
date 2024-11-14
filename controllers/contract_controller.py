@@ -1,8 +1,7 @@
+
 from sqlalchemy.orm import Session
 
-from models import ContractManager
-from models import Role
-from views.client_view import ClientView
+from models import ContractManager, User, Role, Client
 from views.contract_view import ContractView
 from views.main_view import MainView
 
@@ -38,10 +37,7 @@ class ContractController:
                 case "1":
                     self.list_all_contracts()
                 case "2":
-                    if self.user.role == Role.COMMERCIAL:
-                        self.update_contract()
-                    else:
-                        MainView.print_error("Accès refusé. Seuls les commerciaux peuvent mettre à jour les contrats.")
+                    self.update_contract()
                 case "3":
                     self.list_my_contracts()
                 case "4":
@@ -54,13 +50,33 @@ class ContractController:
                     MainView.print_invalid_input()
 
     def create_contract(self):
-        """Create a new contract."""
+        """Creation of new contract"""
         try:
             contract_data = ContractView.get_contract_data()
+
+            client_id = contract_data.get('client_id')
+            client = self.db.query(Client).get(client_id)
+
+            if not client:
+                MainView.print_error(f"Client avec ID {client_id} n'existe pas.")
+                return
+
+            commercial_id = client.commercial_id
+
+            commercial = self.db.query(User).get(commercial_id)
+            if not commercial or commercial.role != Role.COMMERCIAL:
+                MainView.print_error(f"L'utilisateur ID {commercial_id} n'est pas un commercial.")
+                return
+
+            contract_data['commercial_id'] = commercial_id
+
             with self.db as session:
-                new_contract = self.contract_manager.add_contract(contract_data, session)
-                MainView.print_success(f"Nouveau contract créé avec succès. ID: {new_contract.id}")
+                new_contract = self.contract_manager.add_contract(
+                    contract_data, session)
+                MainView.print_success(
+                    f"Nouveau contrat créé avec succès. ID: {new_contract.id}")
                 return new_contract
+
         except ValueError as e:
             MainView.print_error(f"Erreur: {e} Veuillez réessayer.")
         except Exception as e:
@@ -72,35 +88,56 @@ class ContractController:
             contracts = self.contract_manager.get_all_contracts()
             ContractView.display_contract_list(contracts)
         except Exception as e:
-            MainView.print_error(f"Erreur lors de la récupération des contracts: {e}")
+            MainView.print_error(
+                f"Erreur lors de la récupération des contracts: {e}")
 
     def list_my_contracts(self):
         """List contracts associated with the current commercial."""
         if self.user.role != Role.COMMERCIAL:
-            MainView.print_error("Accès refusé. Cette fonction est réservée aux commerciaux.")
+            MainView.print_error(
+                "Accès refusé. Cette fonction est réservée aux commerciaux.")
             return
         try:
-            contracts = self.contract_manager.get_contracts_by_commercial(self.user.id)
+            contracts = self.contract_manager.get_contracts_by_commercial(
+                self.user.id)
             ContractView.display_contract_list(contracts)
         except Exception as e:
-            MainView.print_error(f"Erreur lors de la récupération de vos contracts: {e}")
-
+            MainView.print_error(
+                f"Erreur lors de la récupération de vos contracts: {e}")
 
     def update_contract(self):
-        """Update an existing contract."""
+        """Mettre à jour un contrat existant."""
         contract_id = ContractView.get_contract_id()
         with self.db as session:
-            existing_contract = self.contract_manager.get_contract_by_id(contract_id, session)
-
+            # Vérifier l'existence du contrat
+            existing_contract = self.contract_manager.get_contract_by_id(contract_id)
             if not existing_contract:
-                MainView.print_error(f"Contract avec ID {contract_id} introuvable.")
+                MainView.print_error(f"Contrat avec l'ID {contract_id} introuvable.")
                 return
 
-            # Verify if the contract belongs to the current commercial
-            if existing_contract.commercial_id != self.user.id:
-                MainView.print_error("Vous ne pouvez modifier que vos propres contracts.")
+            # Vérifier le rôle de l'utilisateur et les droits de modification du contrat
+            if self.user.role == Role.COMMERCIAL and existing_contract.commercial_id != self.user.id:
+                MainView.print_error("Vous ne pouvez modifier que vos propres contrats.")
+                return
+            elif self.user.role == Role.SUPPORT:
+                MainView.print_error("Vous n'avez pas les droits pour modifier les contrats.")
                 return
 
+            # Vérifier l'existence du client
+            client_id = existing_contract.client_id
+            client = session.query(Client).get(client_id)
+            if not client:
+                MainView.print_error(f"Client avec l'ID {client_id} introuvable.")
+                return
+
+            # Vérifier le rôle du commercial
+            commercial_id = existing_contract.commercial_id
+            commercial = session.query(User).get(commercial_id)
+            if not commercial or commercial.role != Role.COMMERCIAL:
+                MainView.print_error(f"L'utilisateur assigné avec l'ID {commercial_id} n'est pas un commercial.")
+                return
+
+            # Mise à jour du contrat avec gestion des erreurs
             try:
                 ContractView.display_contract_details(existing_contract)
                 updated_data = ContractView.get_updated_contract_data()
@@ -108,31 +145,20 @@ class ContractController:
 
                 if updated_contract:
                     session.commit()
-                    MainView.print_success("Les informations du contract ont été mises à jour.")
+                    MainView.print_success("Les informations du contrat ont été mises à jour avec succès.")
                 else:
-                    MainView.print_error("Échec de la mise à jour du contract.")
+                    MainView.print_error("Échec de la mise à jour du contrat.")
             except ValueError as e:
                 MainView.print_error(f"Erreur lors de la mise à jour: {e}")
             except Exception as e:
                 MainView.print_error(f"Une erreur inattendue est survenue: {e}")
 
-
     def show_unsigned_contracts(self):
         """Display unsigned contracts."""
         unsigned_contracts = self.contract_manager.get_unsigned_contracts()
-        if not unsigned_contracts:
-            MainView.print_error("Aucun contrat non signé.")  # No unsigned contracts.
-        else:
-            MainView.print_info("Contrats non signés :")  # Unsigned contracts:
-            for contract in unsigned_contracts:
-                MainView.print_info(f"ID du contrat : {contract.id}, Montant total : {contract.total_amount}, Montant restant : {contract.remaining_amount}")
+        ContractView.display_contract_list(unsigned_contracts)
 
     def show_not_fully_paid_contracts(self):
         """Display contracts that are not fully paid."""
         not_fully_paid_contracts = self.contract_manager.get_not_fully_paid_contracts()
-        if not not_fully_paid_contracts:
-            MainView.print_error("Aucun contrat qui n'est pas entièrement payé.")  # No contracts that are not fully paid.
-        else:
-            MainView.print_info("Contrats qui ne sont pas entièrement payés :")  # Contracts that are not fully paid:
-            for contract in not_fully_paid_contracts:
-                MainView.print_info(f"ID du contrat : {contract.id}, Montant total : {contract.total_amount}, Montant restant : {contract.remaining_amount}")
+        ContractView.display_contract_list(not_fully_paid_contracts)

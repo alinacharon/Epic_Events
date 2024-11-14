@@ -71,11 +71,7 @@ class EventController:
             event_choice = EventView.commercial_events_menu()
             match event_choice:
                 case "1":
-                    if self.user.role == Role.COMMERCIAL:
-                        self.create_event_for_signed_client()
-                    else:
-                        MainView.print_error(
-                            "Accès refusé. Seuls les commerciaux peuvent créer des événements.")
+                    self.create_event_for_signed_client()
                 case "2":
                     self.list_all_events()
                 case "3":

@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy.orm import sessionmaker
 
 from config import engine
-from models import Contract, Client
+from models import Contract
 
 
 class ContractManager:
@@ -21,7 +21,7 @@ class ContractManager:
         with self.Session() as session:
             return session.query(Contract).all()
 
-    def get_contract_by_id(self, contract_id, session):
+    def get_contract_by_id(self, contract_id):
         with self.Session() as session:
             return session.query(Contract).get(contract_id)
 

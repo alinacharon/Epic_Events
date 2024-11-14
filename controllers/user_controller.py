@@ -34,10 +34,10 @@ class UserController:
         username, email, role, password = UserView.get_user_info()
         try:
             role_enum = Role[role.upper()]
-            with self.db as session:  # Используем контекстный менеджер для управления сессией
+            with self.db as session:  
                 new_user = self.user_manager.add_user(session, username, email, role_enum, password)
-                session.commit()  # Коммитим изменения после добавления пользователя
-                MainView.print_success(f"Utilisateur {new_user.username} créé avec succès.")
+                session.commit()  
+                MainView.print_success(f"Utilisateur {new_user.username} créé avec succès. ID {new_user.id}.")
         except ValueError as ve:
             MainView.print_error(ve)
         except Exception as e:
@@ -65,7 +65,7 @@ class UserController:
             UserView.display_user_details(existing_user)
             updated_data = UserView.get_updated_user_data()
 
-            with self.db as session:  # Используем контекстный менеджер для управления сессией
+            with self.db as session:  
                 updated_user = self.user_manager.update_user(session, user_id, updated_data)
 
                 if updated_user:
@@ -82,7 +82,7 @@ class UserController:
         """Delete an existing user."""
         username = input("Entrez le nom d'employé à supprimer : ")
 
-        with self.db as session:  # Используем контекстный менеджер для управления сессией
+        with self.db as session:  
             user = session.query(User).filter(User.username == username).first()
             if user:
                 session.delete(user)

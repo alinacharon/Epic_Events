@@ -34,9 +34,8 @@ class ContractView:
 
     @classmethod
     def get_contract_data(cls):
-        """Collects contract information from user input."""
+        """Collects data for creating a new contract."""
         client_id = input("Entrez l'ID du client : ")
-        commercial_id = input("Entrez l'ID commercial : ")
         total_amount = float(input("Entrez le montant total : "))
         remaining_amount = float(input("Entrez le montant restant : "))
         signed_input = input("Le contrat est-il signé ? (oui/non) : ")
@@ -44,7 +43,6 @@ class ContractView:
 
         return {
             "client_id": client_id,
-            "commercial_id": commercial_id,
             "total_amount": total_amount,
             "remaining_amount": remaining_amount,
             "signed": signed
@@ -70,10 +68,8 @@ class ContractView:
         total_amount = input("Montant total : ")
         remaining_amount = input("Montant restant : ")
         signed_input = input("Le contrat est-il signé ? (oui/non) : ")
-        # Преобразуем ввод в булевый тип
         signed = signed_input.lower() == 'oui' if signed_input else None
 
-        # Return a dictionary with updated data or None if no new input is provided
         return {
             "client_id": client_id if client_id else None,
             "commercial_id": commercial_id if commercial_id else None,
