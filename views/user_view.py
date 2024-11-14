@@ -48,3 +48,12 @@ class UserView:
             "email": email if email else None,
             "role": role.upper() if role else None
         }
+    @staticmethod
+    def display_users_list(users):
+        """Display a list of users."""
+        if not users:
+            print("Aucun utilisateur trouvé.")
+        else:
+            print("Liste des utilisateurs:")
+            for user in users:
+                print(f"ID: {user.id}, Nom: {user.username}, Email: {user.email}, Rôle: {user.role.name}")

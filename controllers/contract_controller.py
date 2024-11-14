@@ -1,6 +1,4 @@
-
 from sqlalchemy.orm import Session
-
 from models import ContractManager, User, Role, Client
 from views.contract_view import ContractView
 from views.main_view import MainView
@@ -26,7 +24,7 @@ class ContractController:
                 case 'b':
                     break
                 case _:
-                    print("Option invalide. Veuillez réessayer.")
+                    MainView.print_invalid_input()
 
     # COMMERCIAL TEAM MENU
     def commercial_contract_menu(self):
@@ -70,12 +68,9 @@ class ContractController:
 
             contract_data['commercial_id'] = commercial_id
 
-            with self.db as session:
-                new_contract = self.contract_manager.add_contract(
-                    contract_data, session)
-                MainView.print_success(
-                    f"Nouveau contrat créé avec succès. ID: {new_contract.id}")
-                return new_contract
+            new_contract = self.contract_manager.add_contract(contract_data)
+            MainView.print_success(f"Nouveau contrat créé avec succès. ID: {new_contract.id}")
+            return new_contract
 
         except ValueError as e:
             MainView.print_error(f"Erreur: {e} Veuillez réessayer.")
@@ -83,82 +78,78 @@ class ContractController:
             MainView.print_error(f"Une erreur inattendue est survenue: {e}")
 
     def list_all_contracts(self):
-        """List all contracts - accessible to all users."""
+        """Retrieve and display all contracts - accessible to all users."""
         try:
             contracts = self.contract_manager.get_all_contracts()
             ContractView.display_contract_list(contracts)
         except Exception as e:
-            MainView.print_error(
-                f"Erreur lors de la récupération des contracts: {e}")
+            MainView.print_error(f"Erreur lors de la récupération des contrats: {e}")
 
     def list_my_contracts(self):
         """List contracts associated with the current commercial."""
         if self.user.role != Role.COMMERCIAL:
-            MainView.print_error(
-                "Accès refusé. Cette fonction est réservée aux commerciaux.")
+            MainView.print_error("Accès refusé. Cette fonction est réservée aux commerciaux.")
             return
         try:
-            contracts = self.contract_manager.get_contracts_by_commercial(
-                self.user.id)
+            contracts = self.contract_manager.get_contracts_by_commercial(self.user.id)
             ContractView.display_contract_list(contracts)
         except Exception as e:
-            MainView.print_error(
-                f"Erreur lors de la récupération de vos contracts: {e}")
+            MainView.print_error(f"Erreur lors de la récupération de vos contrats: {e}")
 
     def update_contract(self):
-        """Mettre à jour un contrat existant."""
+        """Update an existing contract."""
         contract_id = ContractView.get_contract_id()
-        with self.db as session:
-            # Vérifier l'existence du contrat
-            existing_contract = self.contract_manager.get_contract_by_id(contract_id)
-            if not existing_contract:
-                MainView.print_error(f"Contrat avec l'ID {contract_id} introuvable.")
-                return
+        existing_contract = self.contract_manager.get_contract_by_id(contract_id)
 
-            # Vérifier le rôle de l'utilisateur et les droits de modification du contrat
-            if self.user.role == Role.COMMERCIAL and existing_contract.commercial_id != self.user.id:
-                MainView.print_error("Vous ne pouvez modifier que vos propres contrats.")
-                return
-            elif self.user.role == Role.SUPPORT:
-                MainView.print_error("Vous n'avez pas les droits pour modifier les contrats.")
-                return
+        if not existing_contract:
+            MainView.print_error(f"Contrat avec l'ID {contract_id} introuvable.")
+            return
 
-            # Vérifier l'existence du client
-            client_id = existing_contract.client_id
-            client = session.query(Client).get(client_id)
-            if not client:
-                MainView.print_error(f"Client avec l'ID {client_id} introuvable.")
-                return
+        if self.user.role == Role.COMMERCIAL and existing_contract.commercial_id != self.user.id:
+            MainView.print_error("Vous ne pouvez modifier que vos propres contrats.")
+            return
+        elif self.user.role == Role.SUPPORT:
+            MainView.print_error("Vous n'avez pas les droits pour modifier les contrats.")
+            return
 
-            # Vérifier le rôle du commercial
-            commercial_id = existing_contract.commercial_id
-            commercial = session.query(User).get(commercial_id)
-            if not commercial or commercial.role != Role.COMMERCIAL:
-                MainView.print_error(f"L'utilisateur assigné avec l'ID {commercial_id} n'est pas un commercial.")
-                return
+        client_id = existing_contract.client_id
+        client = self.db.query(Client).get(client_id)
+        if not client:
+            MainView.print_error(f"Client avec l'ID {client_id} introuvable.")
+            return
 
-            # Mise à jour du contrat avec gestion des erreurs
-            try:
-                ContractView.display_contract_details(existing_contract)
-                updated_data = ContractView.get_updated_contract_data()
-                updated_contract = self.contract_manager.update_contract(contract_id, updated_data)
+        commercial_id = existing_contract.commercial_id
+        commercial = self.db.query(User).get(commercial_id)
+        if not commercial or commercial.role != Role.COMMERCIAL:
+            MainView.print_error(f"L'utilisateur assigné avec l'ID {commercial_id} n'est pas un commercial.")
+            return
 
-                if updated_contract:
-                    session.commit()
-                    MainView.print_success("Les informations du contrat ont été mises à jour avec succès.")
-                else:
-                    MainView.print_error("Échec de la mise à jour du contrat.")
-            except ValueError as e:
-                MainView.print_error(f"Erreur lors de la mise à jour: {e}")
-            except Exception as e:
-                MainView.print_error(f"Une erreur inattendue est survenue: {e}")
+        try:
+            ContractView.display_contract_details(existing_contract)
+            updated_data = ContractView.get_updated_contract_data()
+            updated_contract = self.contract_manager.update_contract(contract_id, updated_data)
+
+            if updated_contract:
+                MainView.print_success("Les informations du contrat ont été mises à jour avec succès.")
+            else:
+                MainView.print_error("Échec de la mise à jour du contrat.")
+        except ValueError as e:
+            MainView.print_error(f"Erreur lors de la mise à jour: {e}")
+        except Exception as e:
+            MainView.print_error(f"Une erreur inattendue est survenue: {e}")
 
     def show_unsigned_contracts(self):
         """Display unsigned contracts."""
-        unsigned_contracts = self.contract_manager.get_unsigned_contracts()
-        ContractView.display_contract_list(unsigned_contracts)
+        try:
+            unsigned_contracts = self.contract_manager.get_unsigned_contracts()
+            ContractView.display_contract_list(unsigned_contracts)
+        except Exception as e:
+            MainView.print_error(f"Erreur lors de la récupération des contrats non signés: {e}")
 
     def show_not_fully_paid_contracts(self):
         """Display contracts that are not fully paid."""
-        not_fully_paid_contracts = self.contract_manager.get_not_fully_paid_contracts()
-        ContractView.display_contract_list(not_fully_paid_contracts)
+        try:
+            not_fully_paid_contracts = self.contract_manager.get_not_fully_paid_contracts()
+            ContractView.display_contract_list(not_fully_paid_contracts)
+        except Exception as e:
+            MainView.print_error(f"Erreur lors de la récupération des contrats non totalement payés: {e}")

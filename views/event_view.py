@@ -121,13 +121,16 @@ class EventView:
             return
 
         for event in events:
+            # Используем support_contact вместо support
+            support_contact_name = event.support_contact.username if event.support_contact else "Non assigné"
+            
             print(
                 f"- ID: {event.id}, "
                 f"Date: {event.start_date.strftime('%Y-%m-%d %H:%M')}, "
                 f"Lieu: {event.location}, "
                 f"Participants: {event.num_attendees}, "
                 f"Client: {event.client_id}, "
-                f"Support: {event.support_contact_id}"
+                f"Support: {support_contact_name}"
             )
 
     @classmethod

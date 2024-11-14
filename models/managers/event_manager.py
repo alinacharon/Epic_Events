@@ -1,72 +1,49 @@
 from sqlalchemy.orm import sessionmaker, joinedload
-
 from config import engine
-from models import Event, User, Role
+from models import Event, User
 
 
 class EventManager:
     def __init__(self):
         self.Session = sessionmaker(bind=engine)
 
-    def add_event(self, event_data, session):
-        # Validate dates
-        if event_data['end_date'] < event_data['start_date']:
-            raise ValueError("La date de fin ne peut pas être antérieure à la date de début.")
-
-        # Create and validate the event
-        event = Event(**event_data)
-        session.add(event)
-        return event
+    def add_event(self, event_data):
+        """Add a new event."""
+        with self.Session() as session:
+            event = Event(**event_data)
+            session.add(event)
+            session.commit()
+            session.refresh(event)
+            return event
 
     def get_all_events(self):
-        """Get all events."""
+        """Retrieve all events with joined commercial and support details."""
         with self.Session() as session:
-            return session.query(Event).all()
+            events = session.query(Event).options(
+                joinedload(Event.client), 
+                joinedload(Event.support_contact) 
+            ).all()
+            return events
 
     def get_event_by_id(self, event_id):
-        """Get an event by its ID."""
+        """Retrieve event details by ID with related data."""
         with self.Session() as session:
-            return session.query(Event).options(joinedload(Event.contract)).get(event_id)
+            event = session.query(Event).options(joinedload(Event.client), joinedload(Event.support_contact)).get(event_id)
+            return event
 
     def get_events_by_client(self, client_id):
-        """Get all events for a specific client."""
+        """Retrieve events for a specific client."""
         with self.Session() as session:
-            return session.query(Event).filter(Event.client_id == client_id).all()
-
-    def get_events_by_support(self, support_contact_id):
-        """Get all events assigned to a specific support contact."""
-        with self.Session() as session:
-            return session.query(Event).filter(
-                Event.support_contact_id == support_contact_id
-            ).all()
-
-    def get_unassigned_events(self):
-        """Get all events without an assigned support contact."""
-        with self.Session() as session:
-            return session.query(Event).filter(
-                Event.support_contact_id == None
-            ).all()
-
-    def get_assigned_events(self):
-        """Get all events without an assigned support contact."""
-        with self.Session() as session:
-            return session.query(Event).filter(
-                Event.support_contact_id != None
-            ).all()
+            events = session.query(Event).options(joinedload(Event.client), joinedload(Event.support_contact)) \
+                .filter(Event.client_id == client_id).all()
+            return events
 
     def update_event(self, event_id, updated_data):
-        """Update an existing event."""
+        """Update event information."""
         with self.Session() as session:
             event = session.query(Event).get(event_id)
             if not event:
-                return False
-
-            # Validate dates if they are being updated
-            if 'start_date' in updated_data or 'end_date' in updated_data:
-                start_date = updated_data.get('start_date', event.start_date)
-                end_date = updated_data.get('end_date', event.end_date)
-                if end_date < start_date:
-                    raise ValueError("La date de fin ne peut pas être antérieure à la date de début.")
+                return None
 
             # Update fields
             for key, value in updated_data.items():
@@ -74,22 +51,39 @@ class EventManager:
                     setattr(event, key, value)
 
             session.commit()
-            return True
+            return event
 
     def assign_support_to_event(self, event_id, support_id):
-        """Assign a support employee to an event."""
+        """Assign a support contact to an event."""
         with self.Session() as session:
             event = session.query(Event).get(event_id)
             if not event:
-                raise ValueError("Événement non trouvé")
+                raise ValueError("Event not found")
 
-            support_user = session.query(User).filter(
-                User.id == support_id,
-                User.role == Role.SUPPORT
-            ).first()
+            support_user = session.query(User).filter_by(id=support_id).first()
             if not support_user:
-                raise ValueError("Employé support non trouvé")
+                raise ValueError("Support user not found")
 
-            event.support_contact_id = support_id
+            event.support_id = support_id
             session.commit()
-            return True
+            return event
+        
+    def get_unassigned_events(self):
+        """Get all events without an assigned support contact, with joined loading of related data."""
+        with self.Session() as session:
+            return session.query(Event).options(
+                joinedload(Event.client), 
+                joinedload(Event.support_contact)  
+            ).filter(
+                Event.support_contact_id == None
+            ).all()
+            
+    def get_assigned_events(self):
+        """Get all events with an assigned support contact, with joined loading of related data."""
+        with self.Session() as session:
+            return session.query(Event).options(
+                joinedload(Event.client),  
+                joinedload(Event.support_contact)  
+            ).filter(
+                Event.support_contact_id != None
+            ).all()
