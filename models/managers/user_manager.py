@@ -57,6 +57,12 @@ class UserManager:
         """Get all users."""
         with self.Session() as session:
             return session.query(User).all()
+        
+    def get_support_users(self):
+        """SUPPORT users."""
+        with self.Session() as session:
+            support_users = session.query(User).filter(User.role == Role.SUPPORT).all()
+            return support_users
 
     def update_user(self, db, user_id: int, updated_data: dict):
         """Update user data by ID."""

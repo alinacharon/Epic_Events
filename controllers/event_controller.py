@@ -1,15 +1,19 @@
 from models import EventManager, Role
 from models.managers.contract_manager import ContractManager
 
+from models import UserManager
+from views.client_view import ClientView
 from views.contract_view import ContractView
 from views.event_view import EventView
 from views.main_view import MainView
+from views.user_view import UserView
 
 
 class EventController:
 
     def __init__(self, user, db):
         self.event_manager = EventManager()
+        self.user_manager = UserManager() 
         self.user = user
         self.db = db
 
@@ -75,7 +79,7 @@ class EventController:
                 case "2":
                     self.list_all_events()
                 case "3":
-                    self.show_events_for_my_clients()
+                    self.get_my_events()
                 case "b":
                     break
                 case "q":
@@ -92,27 +96,25 @@ class EventController:
                 "Accès refusé. Seuls les commerciaux peuvent créer des événements.")
             return
 
-        # Получаем ID контракта и проверяем, подписан ли он
         contract_id = ContractView.get_contract_id()
         contract_manager = ContractManager()
         contract = contract_manager.get_contract_by_id(contract_id)
 
-        if not contract or not contract.signed:  # Проверяем, подписан ли контракт
+        if not contract or not contract.signed: 
             MainView.print_error("Le contrat n'est pas signé ou introuvable.")
             return
 
-        MainView.print_success(f"Contrat Trouvé: {contract}")
+        MainView.print_success(f"Contrat trouvé ! Nom de l'entreprise : {contract.client.company_name}")
         try:
             event_data = EventView.get_event_data()
             event_data['contract_id'] = contract_id
             event_data['client_id'] = contract.client_id
 
-            with self.event_manager.Session() as session:
-                new_event = self.event_manager.add_event(event_data, session)
-                session.commit()
-                MainView.print_success(
-                    f"Nouvel événement créé avec succès. ID: {new_event.id}")
-                return new_event
+           
+            new_event = self.event_manager.add_event(event_data)
+              
+            MainView.print_success(f"Nouvel événement créé avec succès. ID: {new_event.id}")
+            return new_event
         except ValueError as e:
             MainView.print_error(
                 f"Erreur lors de la création de l'événement: {e}")
@@ -169,8 +171,7 @@ class EventController:
             if self.user.role == Role.SUPPORT:
                 events = self.event_manager.get_events_by_support(self.user.id)
             elif self.user.role == Role.COMMERCIAL:
-                events = self.event_manager.get_events_by_commercial(
-                    self.user.id)
+                events = self.event_manager.get_events_by_commercial(self.user.id)
             else:
                 MainView.print_error("Rôle non autorisé pour cette opération.")
                 return
@@ -202,9 +203,8 @@ class EventController:
                 f"Erreur lors de la récupération des événements: {e}")
 
     def assign_support(self):
-        """Assign support employee to an event."""
+        """Назначить сотрудника поддержки на событие."""
         try:
-            # First show unassigned events
             events = self.event_manager.get_unassigned_events()
             if not events:
                 MainView.print_info("Aucun événement sans support trouvé.")
@@ -212,23 +212,26 @@ class EventController:
 
             EventView.display_event_list(events)
 
-            # Show available support employees
-            support_users = self.event_manager.get_available_support_users()
+            support_users = self.user_manager.get_support_users()
             if not support_users:
-                MainView.print_error("Aucun employé support disponible.")
+                MainView.print_error("Aucun employé support trouvé.")
                 return
 
-            EventView.display_support_list(support_users)
+            UserView.display_users_list(support_users)
 
-            # Get assignment data
             event_id, support_id = EventView.get_support_assignment_data()
+            
+            support_user = self.user_manager.get_user_by_id(support_id)
+            if not support_user or support_user.role != "SUPPORT":
+                MainView.print_error("L'utilisateur sélectionné n'est pas un employé support.")
+                return
 
-            # Confirm assignment
-            if EventView.confirm_assignment():
-                if self.event_manager.assign_support_to_event(event_id, support_id):
-                    EventView.display_assignment_success(event_id, support_id)
-                else:
-                    MainView.print_error("Échec de l'attribution du support.")
+            updated_event = self.event_manager.assign_support_to_event(event_id, support_id)
+            if updated_event:
+                MainView.print_success(f"Succès : événement ID:{event_id} assigné au Support ID:{support_id}")
+            else:
+                MainView.print_error("Échec de l'attribution du support.")
+        
         except ValueError as e:
             MainView.print_error(f"Erreur de saisie: {e}")
         except Exception as e:
@@ -238,21 +241,9 @@ class EventController:
     def show_events_by_client(self):
         """Show events filtered by client."""
         try:
-            client_id = input("ID du client: ").strip()
+            client_id = ClientView.get_client_id()
             events = self.event_manager.get_events_by_client(client_id)
             EventView.display_event_list(events)
         except Exception as e:
             MainView.print_error(
                 f"Erreur lors de la récupération des événements: {e}")
-
-    def show_events_for_my_clients(self):
-        """Display events for the commercial's clients."""
-
-        events = self.event_manager.get_events_by_client(self.user.id)
-        if not events:
-            print("Aucun événement trouvé pour vos clients.")
-        else:
-            print("Événements de vos clients :")
-            for event in events:
-                print(f"ID de l'événement : {event.id}, Date de début : {
-                event.start_date.strftime('%Y-%m-%d %H:%M')}, Lieu : {event.location}")

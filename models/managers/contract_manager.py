@@ -23,9 +23,12 @@ class ContractManager:
             return session.query(Contract).options(joinedload(Contract.commercial)).all()
 
     def get_contract_by_id(self, contract_id):
-        """Retrieve a contract by ID with related data."""
+        """Retrieve a contract by ID with related commercial and client data."""
         with self.Session() as session:
-            return session.query(Contract).options(joinedload(Contract.commercial)).get(contract_id)
+            return session.query(Contract).options(
+                joinedload(Contract.commercial), 
+                joinedload(Contract.client)       
+            ).get(contract_id)
 
     def get_contracts_by_commercial(self, commercial_id):
         """Retrieve contracts for a specific commercial with related data."""

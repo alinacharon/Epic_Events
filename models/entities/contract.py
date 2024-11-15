@@ -13,7 +13,6 @@ class Contract(Base):
     remaining_amount: Mapped[float] = mapped_column(Numeric(10, 2))
     signed: Mapped[bool] = mapped_column(default=False)
 
-    # Внешние ключи
     client_id: Mapped[int] = mapped_column(ForeignKey("clients.id"))
     commercial_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     # Отношения
