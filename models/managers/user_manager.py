@@ -15,12 +15,15 @@ class UserManager:
         )
 
     def _hash_password(self, password: str) -> str:
+        """Hash a password using the configured hashing scheme."""
         return self.pwd_context.hash(password)
 
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:
+        """Verify a plain password against a hashed password."""
         return self.pwd_context.verify(plain_password, hashed_password)
 
     def add_user(self, username: str, email: str, role: Role, password: str) -> User:
+        """Add a new user to the database."""
         # Check if the user already exists
         with self.Session() as session:
             existing_user = session.query(User).filter(
@@ -50,23 +53,23 @@ class UserManager:
             return new_user
 
     def get_user_by_id(self, user_id: int):
-        """Retrieve user by ID."""
+        """Retrieve a user by their ID."""
         with self.Session() as session:
             return session.query(User).get(user_id)
 
     def get_all_users(self):
-        """Get all users."""
+        """Retrieve all users from the database."""
         with self.Session() as session:
             return session.query(User).all()
 
     def get_support_users(self):
-        """SUPPORT users."""
+        """Retrieve all users with the SUPPORT role."""
         with self.Session() as session:
             support_users = session.query(User).filter(User.role == Role.SUPPORT).all()
             return support_users
 
     def update_user(self, user_id: int, updated_data: dict):
-        """Update user data by ID."""
+        """Update user data based on the provided user ID."""
         with self.Session() as session:
             user = session.query(User).get(user_id)
 
@@ -82,7 +85,7 @@ class UserManager:
             return user
 
     def delete_user(self, user_id):
-        """Delete an existing user."""
+        """Delete a user from the database by their ID."""
         with self.Session() as session:
             user = session.query(User).filter(User.id == user_id).first()
             if user:

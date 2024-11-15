@@ -11,7 +11,7 @@ class ContractManager:
         self.Session = sessionmaker(bind=engine)
 
     def add_contract(self, contract_data):
-        """Create a new contract using a new session."""
+        """Create a new contract."""
         with self.Session() as session:
             contract = Contract(**contract_data)
             session.add(contract)

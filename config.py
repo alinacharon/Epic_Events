@@ -32,14 +32,13 @@ sentry_sdk.profiler.start_profiler()
 sentry_sdk.profiler.stop_profiler()
 
 
-# Engine creation
-
-
 def create_db_engine(database_name=None):
+    """Create a SQLAlchemy engine for the specified database."""
     if database_name is None:
         database_name = DATABASE_NAME
     return create_engine(
         f'postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{database_name}')
 
 
+# Create the database engine
 engine = create_db_engine()

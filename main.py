@@ -6,17 +6,16 @@ from controllers.main_controller import MainController
 from database import init_database
 from views.main_view import MainView
 
-# Настройка логирования
+# Logging settings
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 logging.disable(logging.CRITICAL)
 
-# Создаем фабрику сессий
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 def init_app():
-    """Инициализация базы данных"""
+    """Initialize the database."""
     try:
         init_database()
         logger.info("Database initialized successfully")
@@ -26,7 +25,7 @@ def init_app():
 
 
 def get_db():
-    """Создаем сессию из БД"""
+    """Create a new database session."""
     db = SessionLocal()
     try:
         return db
@@ -38,10 +37,11 @@ def get_db():
 
 
 def main():
+    """Main application entry point."""
     init_app()
-    sentry_sdk.capture_message("Проверка подключения Sentry!")
+    sentry_sdk.capture_message("Checking Sentry connection!")
 
-    db = get_db()  # Получаем сессию
+    db = get_db()  # Get the database session
 
     try:
         main_controller = MainController(user=None, db=db) 

@@ -89,7 +89,7 @@ class EventController:
 
     # ALL FUNCTIONS
     def create_event_for_signed_client(self):
-        """Создать новое событие для клиента с подписанным контрактом."""
+        """Create a new event for a client with a signed contract."""
         if self.user.role != Role.COMMERCIAL:
             MainView.print_error(
                 "Accès refusé. Seuls les commerciaux peuvent créer des événements.")
@@ -154,7 +154,7 @@ class EventController:
             MainView.print_error(f"Une erreur inattendue est survenue: {e}")
 
     def get_my_events(self):
-        """Получить события, назначенные текущему пользователю."""
+        """Get events assigned to the current user."""
         try:
             if self.user is None:
                 MainView.print_error("Utilisateur non connecté.")
@@ -186,7 +186,7 @@ class EventController:
                 f"Erreur lors de la récupération des événements: {e}")
 
     def show_assigned_events(self):
-        """Show events without assigned support."""
+        """Show events assigned to support representatives."""
         try:
             events = self.event_manager.get_assigned_events()
             EventView.display_event_list(events)
@@ -195,7 +195,7 @@ class EventController:
                 f"Erreur lors de la récupération des événements: {e}")
 
     def assign_support(self):
-        """Назначить сотрудника поддержки на событие."""
+        """Assign a support representative to an event."""
         try:
             events = self.event_manager.get_unassigned_events()
             if not events:

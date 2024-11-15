@@ -93,6 +93,7 @@ class EventManager:
             ).all()
 
     def get_events_by_support(self, support_contact_id: int):
+        """Get events with a specific assigned support contact."""
         with self.Session() as session:
             events = (
                 session.query(Event)
@@ -103,6 +104,7 @@ class EventManager:
             return events
 
     def get_events_by_commercial(self, commercial_id: int):
+        """Get events with a specific commercial."""
         with self.Session() as session:
             events = (
                 session.query(Event)

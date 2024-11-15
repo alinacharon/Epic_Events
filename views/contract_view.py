@@ -6,6 +6,7 @@ from models.entities.contract import Contract
 class ContractView:
     @classmethod
     def show_contract_management_menu(cls):
+        """Display the contract management menu for management roles."""
         print("\nGestion des contrats:")
         print("1. Créer un nouveau contrat")
         print("2. Modifier un contrat existant")
@@ -16,7 +17,7 @@ class ContractView:
 
     @classmethod
     def show_commercial_management_menu(cls):
- 
+        """Display the contract management menu for commercial roles."""
         print("\nGestion des contrats:\n")
         print("1. Voir tous les contrats")
         print("2. Mettre à jour les contrats de mes clients")
@@ -34,7 +35,7 @@ class ContractView:
 
     @classmethod
     def get_contract_data(cls):
-        """Collects data for creating a new contract."""
+        """Collect data for creating a new contract."""
         client_id = input("Entrez l'ID du client : ")
         total_amount = float(input("Entrez le montant total : "))
         remaining_amount = float(input("Entrez le montant restant : "))
@@ -50,7 +51,7 @@ class ContractView:
 
     @staticmethod
     def display_contract_details(contract: 'Contract') -> None:
-        """Displays detailed information about a contract."""
+        """Display detailed information about a contract."""
         print("\nInformations sur le contrat :")
         print(f"ID : {contract.id}")
         print(f"ID du client : {contract.client_id}")
@@ -61,7 +62,7 @@ class ContractView:
 
     @staticmethod
     def get_updated_contract_data() -> Dict[str, Optional[str]]:
-        """Collects updated data for editing a contract."""
+        """Collect updated data for editing a contract."""
         print("\nEntrez les informations mises à jour (laissez vide pour conserver la valeur actuelle) :")
         client_id = input("ID du client : ")
         commercial_id = input("ID commercial : ")
@@ -80,7 +81,7 @@ class ContractView:
 
     @staticmethod
     def display_contract_list(contracts):
-        """Affiche la liste des contrats."""
+        """Display a list of contracts."""
         print("\nListe des contrats :")
         if not contracts:
             print("Aucun contrat trouvé.")
@@ -88,6 +89,5 @@ class ContractView:
 
         for contract in contracts:
             print(f"- ID : {contract.id}, Client : {contract.client_id}, Com. ID : {contract.commercial_id}, "
-                  f"Montant total : {contract.total_amount}, Restant : {
-                      contract.remaining_amount}, "
+                  f"Montant total : {contract.total_amount}, Restant : {contract.remaining_amount}, "
                   f"Signé : {'Oui' if contract.signed else 'Non'}")

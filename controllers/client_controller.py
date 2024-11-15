@@ -74,6 +74,7 @@ class ClientController:
             MainView.print_error(f"Erreur lors de la récupération de vos clients: {e}")
 
     def search_clients(self):
+        """Search clients."""
         try:
             search_criteria = ClientView.search_criteria()
             matched_clients = self.client_manager.search_clients(search_criteria)

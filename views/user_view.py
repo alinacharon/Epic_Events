@@ -2,6 +2,7 @@ class UserView:
 
     @classmethod
     def show_user_management_menu(cls):
+        """Display the user management menu options."""
         print("\nGestion des employés:")
         print("1. Créer un nouvel employé")
         print("2. Mettre à jour les informations d'un employé")
@@ -13,11 +14,12 @@ class UserView:
 
     @staticmethod
     def get_user_id():
-        """Prompts for the user ID to search or edit."""
+        """Prompt for the user ID to search or edit."""
         return input("Entrez le ID de employé : ").strip()
 
     @classmethod
     def get_user_info(cls):
+        """Collect user information for creating a new user."""
         username = input("Entrez le nom d'utilisateur : ")
         email = input("Entrez l'adresse e-mail : ")
         role = input(
@@ -27,7 +29,7 @@ class UserView:
 
     @staticmethod
     def display_user_details(user):
-        """Displays detailed information about a user."""
+        """Display detailed information about a user."""
         print("\nInformations sur le employé :")
         print(f"ID : {user.id}")
         print(f"Username: {user.username}")
@@ -36,7 +38,7 @@ class UserView:
 
     @staticmethod
     def get_updated_user_data():
-        """Collects updated data for editing a user."""
+        """Collect updated data for editing a user."""
         print("\nEntrez les informations mises à jour (laissez vide pour conserver la valeur actuelle) :")
         username = input("Nom d'utilisateur : ")
         email = input("Adresse e-mail : ")

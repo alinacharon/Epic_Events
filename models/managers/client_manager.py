@@ -9,6 +9,7 @@ class ClientManager:
         self.Session = sessionmaker(bind=engine)
 
     def add_client(self, full_name, email, phone, company_name, commercial_id):
+        """Create a new client."""
         with self.Session() as session:
             existing_client = session.query(
                 Client).filter_by(email=email).first()

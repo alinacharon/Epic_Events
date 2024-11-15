@@ -171,5 +171,6 @@ class EventView:
         print(f"Lieu: {event.location}")
         print(f"Nombre de participants: {event.num_attendees}")
         print(f"Client: {event.client.company_name}")
+        print(f"Support: {support_contact_name}")
         if event.notes:
             print(f"Notes: {event.notes}")

@@ -6,13 +6,12 @@ from sqlalchemy.exc import SQLAlchemyError
 from config import create_db_engine, DATABASE_NAME, DATABASE_USER
 from models.entities.base import Base
 
-# Настройка логирования
+# Logging settings
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-#logging.disable(logging.CRITICAL)
 
 
 def create_database(postgres_engine):
@@ -48,16 +47,16 @@ def init_database():
     engine = None
 
     try:
-        # Создание подключения к базе данных по умолчанию 'postgres'
+        # Create a connection to the default 'postgres' database
         postgres_engine = create_db_engine('postgres')
 
-        # Создание базы данных
+        # Create the database
         create_database(postgres_engine)
 
-        # Подключение к созданной или существующей базе данных
+        # Connect to the created or existing database
         engine = create_db_engine()
 
-        # Создание таблиц
+        # Create tables
         create_tables(engine)
 
     except SQLAlchemyError as e:
@@ -72,7 +71,7 @@ def init_database():
 
 
 def reset_database():
-    """DELETE ALL TABLES"""
+    """Delete all tables and recreate them."""
     engine = create_db_engine()
     try:
         Base.metadata.drop_all(engine)
