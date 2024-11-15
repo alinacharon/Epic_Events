@@ -10,7 +10,7 @@ from models.entities.base import Base, str_255
 class Event(Base):
     __tablename__ = 'events'
 
-    name: Mapped[Optional[str_255]] = mapped_column(nullable=True)  
+    name: Mapped[Optional[str_255]] = mapped_column(nullable=False)
     start_date: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     end_date: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     location: Mapped[str_255] = mapped_column(nullable=False)

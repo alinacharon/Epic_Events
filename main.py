@@ -9,7 +9,7 @@ from views.main_view import MainView
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-# logging.disable(logging.CRITICAL)
+logging.disable(logging.CRITICAL)
 
 # Создаем фабрику сессий
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

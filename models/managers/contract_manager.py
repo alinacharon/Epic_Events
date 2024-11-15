@@ -1,5 +1,7 @@
 from datetime import datetime
+
 from sqlalchemy.orm import sessionmaker, joinedload
+
 from config import engine
 from models import Contract
 
@@ -26,8 +28,8 @@ class ContractManager:
         """Retrieve a contract by ID with related commercial and client data."""
         with self.Session() as session:
             return session.query(Contract).options(
-                joinedload(Contract.commercial), 
-                joinedload(Contract.client)       
+                joinedload(Contract.commercial),
+                joinedload(Contract.client)
             ).get(contract_id)
 
     def get_contracts_by_commercial(self, commercial_id):

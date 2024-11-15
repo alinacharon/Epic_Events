@@ -22,8 +22,8 @@ class EventView:
         """Display the event menu for SUPPORT."""
         print("\nGestion des événements (Support) :")
         print("1. Voir les événements assignés")
-        print("2. Mettre à jour les informations des événements assignés")
-        print("3. Voir mes événements")
+        print("2. Voir mes événements")
+        print("3. Mettre à jour les informations de mes événements")
         print("b. Retour")
         print("q. Quitter")
         return input("Choisissez une option : ").strip()
@@ -60,7 +60,7 @@ class EventView:
         """Collect event information from user input."""
         print("\nEntrez les informations de l'événement:")
         try:
-            name = input("Nom de l'événement : ") 
+            name = input("Nom de l'événement : ")
             start_date = cls.parse_date(input("Date de début (DD/MM/YYYY HH:MM) : "))
             end_date = cls.parse_date(input("Date de fin (DD/MM/YYYY HH:MM) : "))
             location = input("Lieu : ")
@@ -68,7 +68,7 @@ class EventView:
             notes = input("Notes (optionnel) : ")
 
             return {
-                "name": name, 
+                "name": name,
                 "start_date": start_date,
                 "end_date": end_date,
                 "location": location,
@@ -126,7 +126,7 @@ class EventView:
             support_contact_name = event.support_contact.username if event.support_contact else "Non assigné"
             print(
                 f"- ID: {event.id}, "
-                f"Nom: {event.name}, " 
+                f"Nom: {event.name}, "
                 f"Date: {event.start_date.strftime('%d/%m/%Y %H:%M')}, "
                 f"Lieu: {event.location}, "
                 f"Participants: {event.num_attendees}, "
@@ -149,15 +149,27 @@ class EventView:
     def get_support_assignment_data():
         """Prompt the user to enter the event ID and support contact ID for assignment."""
         try:
-            # Ввод ID события
             event_id = int(input("Entrez l'ID de l'événement : "))
-            
-            # Ввод ID сотрудника службы поддержки
-            support_id_input = input("Entrez l'ID du contact support (ou laissez vide pour aucun) : ")
+
+            support_id_input = input("Entrez l'ID du contact support : ")
             support_id = int(support_id_input) if support_id_input else None
-            
+
             return event_id, support_id
 
         except ValueError:
             print("Erreur : ID invalide. Veuillez entrer un nombre.")
             return None, None
+
+    @staticmethod
+    def display_event_details(event):
+        """Affiche les détails d'un événement."""
+        print("\n Détail d'un événements :\n")
+        support_contact_name = event.support_contact.username if event.support_contact else "Non assigné"
+        print(f"Nome de l'événement: {event.name}")
+        print(f"Date de début: {event.start_date.strftime('%d/%m/%Y %H:%M')}")
+        print(f"Date de fin: {event.end_date.strftime('%d/%m/%Y %H:%M')}")
+        print(f"Lieu: {event.location}")
+        print(f"Nombre de participants: {event.num_attendees}")
+        print(f"Client: {event.client.company_name}")
+        if event.notes:
+            print(f"Notes: {event.notes}")

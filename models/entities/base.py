@@ -31,19 +31,3 @@ class Base(DeclarativeBase):
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
 
-    @classmethod
-    def get_by_id(cls, session, id):
-        return session.query(cls).filter_by(id=id).first()
-
-    @classmethod
-    def get_all(cls, session):
-        return session.query(cls).all()
-
-    def save(self, session):
-        session.add(self)
-        session.commit()
-
-    def delete(self, session):
-        session.delete(self)
-        session.commit()
-

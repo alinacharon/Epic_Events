@@ -23,7 +23,6 @@ class MainView:
     def print_info(info):
         print(info)
 
-
     # Connection menu
     @classmethod
     def show_login_page(cls):
@@ -37,6 +36,7 @@ class MainView:
         username = input("Entrez le nom d'utilisateur : ")
         password = pwinput.pwinput("Entrez le mot de passe : ", mask="*")
         return username, password
+
     # Menus depending on roles
 
     # MANAGEMENT MENU

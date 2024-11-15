@@ -48,6 +48,7 @@ class UserView:
             "email": email if email else None,
             "role": role.upper() if role else None
         }
+
     @staticmethod
     def display_users_list(users):
         """Display a list of users."""

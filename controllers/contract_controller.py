@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+
 from models import ContractManager, User, Role, Client
 from views.contract_view import ContractView
 from views.main_view import MainView

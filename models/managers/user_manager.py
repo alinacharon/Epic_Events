@@ -1,7 +1,8 @@
+from passlib.context import CryptContext
 from sqlalchemy.orm import sessionmaker
+
 from config import engine
 from models import User, Role
-from passlib.context import CryptContext
 
 
 class UserManager:
@@ -19,7 +20,7 @@ class UserManager:
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:
         return self.pwd_context.verify(plain_password, hashed_password)
 
-    def add_user(self, db, username: str, email: str, role: Role, password: str) -> User:
+    def add_user(self, username: str, email: str, role: Role, password: str) -> User:
         # Check if the user already exists
         with self.Session() as session:
             existing_user = session.query(User).filter(
@@ -44,31 +45,31 @@ class UserManager:
             )
 
             session.add(new_user)
-            session.commit() 
-            session.refresh(new_user)  
+            session.commit()
+            session.refresh(new_user)
             return new_user
 
-    def get_user_by_id(self, db, user_id: int):
+    def get_user_by_id(self, user_id: int):
         """Retrieve user by ID."""
         with self.Session() as session:
             return session.query(User).get(user_id)
 
-    def get_all_users(self, db):
+    def get_all_users(self):
         """Get all users."""
         with self.Session() as session:
             return session.query(User).all()
-        
+
     def get_support_users(self):
         """SUPPORT users."""
         with self.Session() as session:
             support_users = session.query(User).filter(User.role == Role.SUPPORT).all()
             return support_users
 
-    def update_user(self, db, user_id: int, updated_data: dict):
+    def update_user(self, user_id: int, updated_data: dict):
         """Update user data by ID."""
         with self.Session() as session:
             user = session.query(User).get(user_id)
-            
+
             if not user:
                 return None
 
@@ -77,10 +78,10 @@ class UserManager:
                 if value is not None:
                     setattr(user, key, value)
 
-            session.commit()  
+            session.commit()
             return user
 
-    def delete_user(self, db, user_id):
+    def delete_user(self, user_id):
         """Delete an existing user."""
         with self.Session() as session:
             user = session.query(User).filter(User.id == user_id).first()

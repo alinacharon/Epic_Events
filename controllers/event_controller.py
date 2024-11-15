@@ -1,7 +1,6 @@
 from models import EventManager, Role
-from models.managers.contract_manager import ContractManager
-
 from models import UserManager
+from models.managers.contract_manager import ContractManager
 from views.client_view import ClientView
 from views.contract_view import ContractView
 from views.event_view import EventView
@@ -13,7 +12,7 @@ class EventController:
 
     def __init__(self, user, db):
         self.event_manager = EventManager()
-        self.user_manager = UserManager() 
+        self.user_manager = UserManager()
         self.user = user
         self.db = db
 
@@ -57,9 +56,9 @@ class EventController:
                 case "1":
                     self.show_assigned_events()
                 case "2":
-                    self.update_events()
-                case "3":
                     self.get_my_events()
+                case "3":
+                    self.update_events()
                 case "b":
                     break
                 case "q":
@@ -100,7 +99,7 @@ class EventController:
         contract_manager = ContractManager()
         contract = contract_manager.get_contract_by_id(contract_id)
 
-        if not contract or not contract.signed: 
+        if not contract or not contract.signed:
             MainView.print_error("Le contrat n'est pas signé ou introuvable.")
             return
 
@@ -110,9 +109,8 @@ class EventController:
             event_data['contract_id'] = contract_id
             event_data['client_id'] = contract.client_id
 
-           
             new_event = self.event_manager.add_event(event_data)
-              
+
             MainView.print_success(f"Nouvel événement créé avec succès. ID: {new_event.id}")
             return new_event
         except ValueError as e:
@@ -135,27 +133,21 @@ class EventController:
             existing_event = self.event_manager.get_event_by_id(event_id)
 
             if not existing_event:
-                MainView.print_error(f"Événement avec ID {
-                event_id} introuvable.")
+                MainView.print_error(f"Événement avec ID {event_id} introuvable.")
                 return
 
             # Check if user has permission to modify the event
-            if self.user.role != Role.MANAGEMENT or existing_event.creator_id != self.user.id:
-                MainView.print_error(
-                    "Vous n'avez pas les droits pour modifier cet événement.")
-                return
+            if self.user.role == Role.MANAGEMENT or self.user.id == existing_event.support_contact_id:
+                EventView.display_event_details(existing_event)
+                updated_data = EventView.get_updated_event_data()
+                updated_event = self.event_manager.update_event(event_id, updated_data)
 
-            EventView.display_event_details(existing_event)
-            updated_data = EventView.get_updated_event_data()
-            updated_event = self.event_manager.update_event(
-                event_id, updated_data)
-
-            if updated_event:
-                MainView.print_success(
-                    "Les informations de l'événement ont été mises à jour.")
-                EventView.display_event_details(updated_event)
+                if updated_event:
+                    MainView.print_success("Les informations de l'événement ont été mises à jour.")
+                else:
+                    MainView.print_error("Échec de la mise à jour de l'événement.")
             else:
-                MainView.print_error("Échec de la mise à jour de l'événement.")
+                MainView.print_error("Vous n'avez pas les droits pour modifier cet événement.")
         except ValueError as e:
             MainView.print_error(f"Erreur lors de la mise à jour: {e}")
         except Exception as e:
@@ -220,9 +212,9 @@ class EventController:
             UserView.display_users_list(support_users)
 
             event_id, support_id = EventView.get_support_assignment_data()
-            
+
             support_user = self.user_manager.get_user_by_id(support_id)
-            if not support_user or support_user.role != "SUPPORT":
+            if not support_user or support_user.role != Role.SUPPORT:
                 MainView.print_error("L'utilisateur sélectionné n'est pas un employé support.")
                 return
 
@@ -231,12 +223,11 @@ class EventController:
                 MainView.print_success(f"Succès : événement ID:{event_id} assigné au Support ID:{support_id}")
             else:
                 MainView.print_error("Échec de l'attribution du support.")
-        
+
         except ValueError as e:
             MainView.print_error(f"Erreur de saisie: {e}")
         except Exception as e:
             MainView.print_error(f"Une erreur est survenue: {e}")
-
 
     def show_events_by_client(self):
         """Show events filtered by client."""

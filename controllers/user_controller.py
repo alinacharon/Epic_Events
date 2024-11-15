@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
+
 from models import UserManager, Role
-from views.user_view import UserView
 from views.main_view import MainView
+from views.user_view import UserView
+
 
 class UserController:
     def __init__(self, user, db: Session):
@@ -32,9 +34,9 @@ class UserController:
         try:
             username, email, role, password = UserView.get_user_info()
             role_enum = Role[role.upper()]
-            
+
             # Create user
-            new_user = self.user_manager.add_user(self.db, username, email, role_enum, password)
+            new_user = self.user_manager.add_user(username, email, role_enum, password)
             MainView.print_success(f"Utilisateur {new_user.username} créé avec succès. ID {new_user.id}.")
         except ValueError as ve:
             MainView.print_error(ve)
@@ -44,7 +46,7 @@ class UserController:
     def list_users(self):
         """List all users - accessible to all users."""
         try:
-            users = self.user_manager.get_all_users(self.db)
+            users = self.user_manager.get_all_users()
             if users:
                 UserView.display_users_list(users)
             else:
@@ -56,7 +58,7 @@ class UserController:
         """Update an existing user."""
         user_id = UserView.get_user_id()
 
-        existing_user = self.user_manager.get_user_by_id(self.db, user_id)
+        existing_user = self.user_manager.get_user_by_id(user_id)
         if not existing_user:
             MainView.print_error(f"Utilisateur avec ID {user_id} introuvable.")
             return
@@ -65,7 +67,7 @@ class UserController:
             UserView.display_user_details(existing_user)
             updated_data = UserView.get_updated_user_data()
 
-            updated_user = self.user_manager.update_user(self.db, user_id, updated_data)
+            updated_user = self.user_manager.update_user(user_id, updated_data)
 
             if updated_user:
                 MainView.print_success("Les informations de l'utilisateur ont été mises à jour.")
@@ -82,7 +84,7 @@ class UserController:
         user_id = UserView.get_user_id()
 
         try:
-            if self.user_manager.delete_user(self.db, user_id):
+            if self.user_manager.delete_user(user_id):
                 MainView.print_success(f"L'utilisateur {user_id} a été supprimé avec succès.")
             else:
                 MainView.print_error(f"L'utilisateur {user_id} n'a pas été trouvé.")

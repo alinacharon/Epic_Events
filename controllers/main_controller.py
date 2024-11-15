@@ -11,12 +11,12 @@ class MainController:
         self.user = user
         self.db = db
 
-    def login(self, username: str, password: str) -> User:
+    def login(self, username: str, password: str):
         try:
             user = self.db.query(User).filter(User.username == username).first()
             if user:
-                user_manager = UserManager()  # Создаем экземпляр UserManager
-                if user_manager.verify_password(password, user.password):  # Проверка пароля
+                user_manager = UserManager()
+                if user_manager.verify_password(password, user.password):
                     MainView.print_info(f"L'utilisateur {username} s'est connecté avec succès.")
                     return user
                 else:
