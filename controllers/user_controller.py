@@ -71,7 +71,6 @@ class UserController:
 
             if updated_user:
                 MainView.print_success("Les informations de l'utilisateur ont été mises à jour.")
-                UserView.display_user_details(updated_user)
             else:
                 MainView.print_error("Échec de la mise à jour de l'utilisateur.")
         except ValueError as e:

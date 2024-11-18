@@ -15,7 +15,7 @@ class UserView:
     @staticmethod
     def get_user_id():
         """Prompt for the user ID to search or edit."""
-        return input("Entrez le ID de employé : ").strip()
+        return input("Entrez l'ID de employé : ").strip()
 
     @classmethod
     def get_user_info(cls):

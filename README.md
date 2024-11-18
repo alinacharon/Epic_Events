@@ -80,4 +80,9 @@ This project is a comprehensive CRM (Customer Relationship Management) platform 
    python main.py
    ```
 
-2. Follow the on-screen instructions to navigate through the menus for managing users, contracts, and events.
+2. To create the admin user, run: 
+   ```bash
+   python creation_admin.py
+   ```
+
+3. Follow the on-screen instructions to navigate through the menus for managing users, contracts, and events.

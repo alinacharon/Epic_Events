@@ -171,7 +171,7 @@ class EventController:
             if events:
                 EventView.display_event_list(events)
             else:
-                MainView.print_info("Aucun événement trouvé.")
+                MainView.print_info("\nAucun événement trouvé.")
         except Exception as e:
             MainView.print_error(
                 f"Erreur lors de la récupération des événements: {e}")

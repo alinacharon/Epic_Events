@@ -50,6 +50,9 @@ class ContractController:
 
     def create_contract(self):
         """Creation of new contract"""
+        if self.user.role != Role.MANAGEMENT:
+            MainView.print_error("Accès refusé. Cette fonction est réservée au Management.")
+            return
         try:
             contract_data = ContractView.get_contract_data()
 

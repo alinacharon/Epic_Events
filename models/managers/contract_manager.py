@@ -4,12 +4,14 @@ from sqlalchemy.orm import sessionmaker, joinedload
 
 from config import engine
 from models import Contract
+from sentry_logging import log_crud_operation
 
 
 class ContractManager:
     def __init__(self):
         self.Session = sessionmaker(bind=engine)
-
+        
+    @log_crud_operation("create")
     def add_contract(self, contract_data):
         """Create a new contract."""
         with self.Session() as session:
@@ -38,7 +40,8 @@ class ContractManager:
             contracts = session.query(Contract).options(joinedload(Contract.commercial)) \
                 .filter(Contract.commercial_id == commercial_id).all()
             return contracts
-
+        
+    @log_crud_operation("update")
     def update_contract(self, contract_id, updated_data):
         """Update a contract using provided data and commit changes."""
         with self.Session() as session:

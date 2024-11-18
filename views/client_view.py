@@ -76,11 +76,10 @@ class ClientView:
         email = input("Adresse e-mail : ")
         phone = input("Téléphone : ")
         company_name = input("Nom de l'entreprise : ")
-        commercial_contact = input("Contact commercial : ")
+
         return {
             "full_name": full_name if full_name else None,
             "email": email if email else None,
             "phone": phone if phone else None,
             "company_name": company_name if company_name else None,
-            "commercial_contact": commercial_contact if commercial_contact else None
         }

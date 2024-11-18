@@ -4,12 +4,20 @@ from sqlalchemy.orm import sessionmaker
 from config import engine
 from controllers.main_controller import MainController
 from database import init_database
+from sentry_logging import setup_global_error_handler
 from views.main_view import MainView
+from config import init_sentry
+
+init_sentry()
+try:
+    sentry_sdk.capture_message("Application started successfully", level="info")
+except Exception as e:
+    print(f"Sentry logging error: {e}")
 
 # Logging settings
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-logging.disable(logging.CRITICAL)
+#logging.disable(logging.CRITICAL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -38,10 +46,8 @@ def get_db():
 
 def main():
     """Main application entry point."""
-    init_app()
-    sentry_sdk.capture_message("Checking Sentry connection!")
-
-    db = get_db()  # Get the database session
+    setup_global_error_handler()
+    db = get_db()  
 
     try:
         main_controller = MainController(user=None, db=db) 

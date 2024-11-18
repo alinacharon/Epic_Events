@@ -46,6 +46,7 @@ class ClientManager:
             return clients
 
     def search_clients(self, search_criteria):
+        """Search client by criteria"""
         with self.Session() as session:
             query = session.query(Client).options(joinedload(Client.commercial))
 
@@ -59,7 +60,7 @@ class ClientManager:
             return query.all()
 
     def get_client_by_id(self, client_id):
-        """Получить клиента по ID с загрузкой связанных данных."""
+        """Get client by ID."""
         with self.Session() as session:
             client = session.query(Client).options(joinedload(Client.commercial)).get(client_id)
             return client

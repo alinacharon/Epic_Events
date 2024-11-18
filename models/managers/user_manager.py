@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker
 
 from config import engine
 from models import User, Role
+from sentry_logging import log_crud_operation
 
 
 class UserManager:
@@ -21,7 +22,8 @@ class UserManager:
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:
         """Verify a plain password against a hashed password."""
         return self.pwd_context.verify(plain_password, hashed_password)
-
+    
+    @log_crud_operation("create")
     def add_user(self, username: str, email: str, role: Role, password: str) -> User:
         """Add a new user to the database."""
         # Check if the user already exists
@@ -67,7 +69,8 @@ class UserManager:
         with self.Session() as session:
             support_users = session.query(User).filter(User.role == Role.SUPPORT).all()
             return support_users
-
+        
+    @log_crud_operation("update")
     def update_user(self, user_id: int, updated_data: dict):
         """Update user data based on the provided user ID."""
         with self.Session() as session:
@@ -83,7 +86,7 @@ class UserManager:
 
             session.commit()
             return user
-
+    @log_crud_operation("delete")
     def delete_user(self, user_id):
         """Delete a user from the database by their ID."""
         with self.Session() as session:
