@@ -1,5 +1,5 @@
 
-# epic_events
+# Epic_Events
 
 ## Overview
 
@@ -23,18 +23,18 @@ This project is a comprehensive CRM (Customer Relationship Management) platform 
 - Create clients (clients will be automatically associated with them).
 - Update clients for whom they are responsible.
 - Modify/update contracts for clients they manage.
-- Filter contract displays, for example, to show all contracts that are not yet signed or are not fully paid.
+- Filter contract displays: show all contracts that are not yet signed or are not fully paid.
 - Create an event for a client who has signed a contract.
 
 #### Support Team
-- Filter event displays, for example, to show only events assigned to them.
+- Filter event displays: show only events assigned to them.
 - Update events for which they are responsible.
 
 ## Features
 
 - User management (create, update, delete users)
 - Contract management (create, update, contracts)
-- Event management (create, view events associated with clients)
+- Event management (update , view events associated with clients)
 - Role-based access control (commercial, support, management)
 - Password hashing using Argon2 for secure user authentication
 - Filtering contracts based on their status (unsigned, unpaid)
