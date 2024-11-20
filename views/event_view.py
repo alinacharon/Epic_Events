@@ -21,7 +21,7 @@ class EventView:
     def support_events_menu(cls):
         """Display the event menu for SUPPORT."""
         print("\nGestion des événements (Support) :")
-        print("1. Voir les événements assignés")
+        print("1. Voir tous les événements assignés")
         print("2. Voir mes événements")
         print("3. Mettre à jour les informations de mes événements")
         print("b. Retour")
