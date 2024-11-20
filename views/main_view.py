@@ -5,7 +5,7 @@ class MainView:
     @staticmethod
     def print_success(info):
         """Print a success message in green."""
-        print(f"\n\x1b[32m{info}\x1b[0m")
+        print(f"\n\x1b[32m{info}\x1b[0m\n")
 
     @staticmethod
     def print_invalid_input():
@@ -16,7 +16,7 @@ class MainView:
     @staticmethod
     def print_error(info):
         """Print an error message in yellow."""
-        print(f"\n\x1b[33m{info}\x1b[0m")
+        print(f"\n\x1b[33m{info}\x1b[0m\n")
 
     @staticmethod
     def print_exit():
@@ -26,14 +26,16 @@ class MainView:
     @staticmethod
     def print_info(info):
         """Print general information."""
-        print(info)
+        print(f'\n{info}\n')
 
     # Connection menu
     @classmethod
     def show_login_page(cls):
         """Display the login options."""
-        print("\n1. Connexion")
-        print("q. Quitter")
+        print(
+            "\n\033[38;5;213mBienvenue à Epic Event ! Veuillez vous connecter.\n\033[0m\n")
+        print("1. Connexion")
+        print("q. Quitter\n")
         choice = input("Choisissez une action : ")
         return choice
 

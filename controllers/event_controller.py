@@ -67,7 +67,7 @@ class EventController:
                 case _:
                     MainView.print_invalid_input()
 
-    # COMMERCIAL TEAM 
+    # COMMERCIAL TEAM
     def commercial_event_menu(self):
         """Event management submenu for the Commercial role."""
         while True:
@@ -103,7 +103,8 @@ class EventController:
             MainView.print_error("Le contrat n'est pas signé ou introuvable.")
             return
 
-        MainView.print_success(f"Contrat trouvé ! Nom de l'entreprise : {contract.client.company_name}")
+        MainView.print_success(f"Contrat trouvé ! Nom de l'entreprise : {
+                               contract.client.company_name}")
         try:
             event_data = EventView.get_event_data()
             event_data['contract_id'] = contract_id
@@ -111,7 +112,8 @@ class EventController:
 
             new_event = self.event_manager.add_event(event_data)
 
-            MainView.print_success(f"Nouvel événement créé avec succès. ID: {new_event.id}")
+            MainView.print_success(
+                f"Nouvel événement créé avec succès. ID: {new_event.id}")
             return new_event
         except ValueError as e:
             MainView.print_error(
@@ -133,21 +135,26 @@ class EventController:
             existing_event = self.event_manager.get_event_by_id(event_id)
 
             if not existing_event:
-                MainView.print_error(f"Événement avec ID {event_id} introuvable.")
+                MainView.print_error(f"Événement avec ID {
+                                     event_id} introuvable.")
                 return
 
             # Check if user has permission to modify the event
             if self.user.role == Role.MANAGEMENT or self.user.id == existing_event.support_contact_id:
                 EventView.display_event_details(existing_event)
                 updated_data = EventView.get_updated_event_data()
-                updated_event = self.event_manager.update_event(event_id, updated_data)
+                updated_event = self.event_manager.update_event(
+                    event_id, updated_data)
 
                 if updated_event:
-                    MainView.print_success("Les informations de l'événement ont été mises à jour.")
+                    MainView.print_success(
+                        "Les informations de l'événement ont été mises à jour.")
                 else:
-                    MainView.print_error("Échec de la mise à jour de l'événement.")
+                    MainView.print_error(
+                        "Échec de la mise à jour de l'événement.")
             else:
-                MainView.print_error("Vous n'avez pas les droits pour modifier cet événement.")
+                MainView.print_error(
+                    "Vous n'avez pas les droits pour modifier cet événement.")
         except ValueError as e:
             MainView.print_error(f"Erreur lors de la mise à jour: {e}")
         except Exception as e:
@@ -163,7 +170,8 @@ class EventController:
             if self.user.role == Role.SUPPORT:
                 events = self.event_manager.get_events_by_support(self.user.id)
             elif self.user.role == Role.COMMERCIAL:
-                events = self.event_manager.get_events_by_commercial(self.user.id)
+                events = self.event_manager.get_events_by_commercial(
+                    self.user.id)
             else:
                 MainView.print_error("Rôle non autorisé pour cette opération.")
                 return
@@ -215,14 +223,20 @@ class EventController:
 
             support_user = self.user_manager.get_user_by_id(support_id)
             if not support_user or support_user.role != Role.SUPPORT:
-                MainView.print_error("L'utilisateur sélectionné n'est pas un employé support.")
+                MainView.print_error(
+                    "L'utilisateur sélectionné n'est pas un employé support.")
                 return
 
-            updated_event = self.event_manager.assign_support_to_event(event_id, support_id)
-            if updated_event:
-                MainView.print_success(f"Succès : événement ID:{event_id} assigné au Support ID:{support_id}")
-            else:
-                MainView.print_error("Échec de l'attribution du support.")
+            updated_event = self.event_manager.assign_support_to_event(
+                event_id, support_id)
+
+            if updated_event is None:
+                MainView.print_error(
+                    f"Un support (ID:{support_id}) est déjà assigné à l'événement ID:{event_id}.")
+                return
+
+            MainView.print_success(f"Succès : événement ID:{
+                                   event_id} assigné au Support ID:{support_id}")
 
         except ValueError as e:
             MainView.print_error(f"Erreur de saisie: {e}")

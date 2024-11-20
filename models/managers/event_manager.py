@@ -63,13 +63,16 @@ class EventManager:
             if not event:
                 return None
 
+            if event.support_contact_id is not None:
+                return None
+
             support_user = session.query(User).filter_by(id=support_id).first()
             if not support_user:
                 return None
 
-            event.support_contact = support_user
+            event.support_contact_id = support_id
             session.commit()
-            session.refresh(event)
+
             return event
 
     def get_unassigned_events(self):

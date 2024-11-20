@@ -117,7 +117,7 @@ class EventView:
     @staticmethod
     def display_event_list(events):
         """Display a list of events."""
-        print("\nListe des événements:")
+        print("\nListe des événements:\n")
         if not events:
             print("Aucun événement trouvé.")
             return
@@ -149,7 +149,7 @@ class EventView:
     def get_support_assignment_data():
         """Prompt the user to enter the event ID and support contact ID for assignment."""
         try:
-            event_id = int(input("Entrez l'ID de l'événement : "))
+            event_id = int(input("\nEntrez l'ID de l'événement : "))
 
             support_id_input = input("Entrez l'ID du contact support : ")
             support_id = int(support_id_input) if support_id_input else None
