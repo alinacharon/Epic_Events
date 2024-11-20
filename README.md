@@ -6,10 +6,10 @@
 This project is a comprehensive CRM (Customer Relationship Management) platform designed to manage users, clients, contracts, and events efficiently. The system ensures that each collaborator has unique credentials to access the platform, with roles assigned based on their department.
 
 ### General Requirements
-- Each collaborator must have their own credentials to use the platform.
+- Each collaborator have their own credentials to use the platform.
 - Each collaborator is associated with a specific role (based on their department).
-- The platform must allow for the storage and updating of information regarding clients, contracts, and events.
-- All collaborators should have read-only access to all clients, contracts, and events.
+- The platform allow the storage and updating of information regarding clients, contracts, and events.
+- All collaborators have read-only access to all clients, contracts, and events.
 
 ### Individual Requirements
 
@@ -44,8 +44,8 @@ This project is a comprehensive CRM (Customer Relationship Management) platform 
 - Python
 - SQLAlchemy
 - Argon2 for password hashing
-- SQLite (or any other database of your choice)
-- FastAPI (or any other web framework if applicable)
+- PostgreSQL
+- Sentry
 
 ### Database Management
 - The project includes a robust database management system using SQLAlchemy to handle database interactions.
