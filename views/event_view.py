@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Dict, Optional
 
 
 class EventView:
@@ -79,7 +78,7 @@ class EventView:
             raise ValueError(f"Erreur de saisie : {str(e)}")
 
     @classmethod
-    def get_updated_event_data(cls) -> Dict[str, Optional[str]]:
+    def get_updated_event_data(cls):
         """Collect updated data for editing an event."""
         print("\nEntrez les informations mises à jour (laissez vide pour conserver la valeur actuelle):")
         updates = {}

@@ -34,9 +34,9 @@ class UserManager:
 
             if existing_user:
                 if existing_user.username == username:
-                    raise ValueError("Le nom d'utilisateur existe déjà.")  # "Username already exists."
+                    raise ValueError("Le nom d'utilisateur existe déjà.") 
                 else:
-                    raise ValueError("L'email existe déjà.")  # "Email already exists."
+                    raise ValueError("L'email existe déjà.")  
 
             # Hash the password before saving
             hashed_password = self._hash_password(password)

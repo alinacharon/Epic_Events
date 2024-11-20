@@ -1,5 +1,3 @@
-from typing import Dict, Optional
-
 from models.entities.contract import Contract
 
 
@@ -50,7 +48,7 @@ class ContractView:
         }
 
     @staticmethod
-    def display_contract_details(contract: 'Contract') -> None:
+    def display_contract_details(contract: 'Contract'):
         """Display detailed information about a contract."""
         print("\nInformations sur le contrat :")
         print(f"ID : {contract.id}")
@@ -61,7 +59,7 @@ class ContractView:
         print(f"Contrat signé : {'Oui' if contract.signed else 'Non'}")
 
     @staticmethod
-    def get_updated_contract_data() -> Dict[str, Optional[str]]:
+    def get_updated_contract_data():
         """Collect updated data for editing a contract."""
         print("\nEntrez les informations mises à jour (laissez vide pour conserver la valeur actuelle) :")
         client_id = input("ID du client : ")

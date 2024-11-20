@@ -47,8 +47,6 @@ class EventManager:
                 event_id)
             if not event:
                 return None
-
-            # Update fields
             for key, value in updated_data.items():
                 if value is not None:
                     setattr(event, key, value)
