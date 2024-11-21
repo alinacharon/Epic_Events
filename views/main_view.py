@@ -56,7 +56,7 @@ class MainView:
         print("1. Gestion des employés")
         print("2. Gestion des contrats")
         print("3. Gestion des événements")
-        print("4. Voir les clients")
+        print("4. Voir tous les clients")
         print("q. Quitter")
         choice = input("Enter your choice: ")
         return choice
@@ -79,8 +79,8 @@ class MainView:
         """Display the support menu options."""
         print("\nMenu Support:\n")
         print("1. Gestion des événements")
-        print("2. Voir les clients")
-        print("3. Voir les contrats")
+        print("2. Voir tous les clients")
+        print("3. Voir tous les contrats")
         print("4. Quitter")
         choice = input("Choisissez une option : ")
         return choice

@@ -1,4 +1,8 @@
+from rich.console import Console
+from rich.table import Table
+from rich import box
 class UserView:
+    console = Console()
 
     @classmethod
     def show_user_management_menu(cls):
@@ -44,7 +48,6 @@ class UserView:
         email = input("Adresse e-mail : ")
         role = input("Rôle (COMMERCIAL, MANAGEMENT, SUPPORT) : ")
 
-        # Return a dictionary with updated data or None if no new input is provided
         return {
             "username": username if username else None,
             "email": email if email else None,
@@ -53,10 +56,25 @@ class UserView:
 
     @staticmethod
     def display_users_list(users):
-        """Display a list of users."""
+        """Display a list of users using Rich table."""
+        UserView.console.print("\n[bold cyan]Liste des utilisateurs :[/bold cyan]\n")
+
         if not users:
-            print("Aucun utilisateur trouvé.")
-        else:
-            print("Liste des utilisateurs:")
-            for user in users:
-                print(f"ID: {user.id}, Nom: {user.username}, Email: {user.email}, Rôle: {user.role.name}")
+            UserView.console.print("[bold red]Aucun utilisateur trouvé.[/bold red]")
+            return
+
+        table = Table(show_header=True, header_style="bold cyan", box=box.SQUARE)
+        table.add_column("ID", style="dim", width=6)
+        table.add_column("Nom d'utilisateur", style="bold blue")
+        table.add_column("Email", style="cyan")
+        table.add_column("Rôle", style="blue")
+
+        for user in users:
+            table.add_row(
+                str(user.id),
+                user.username,
+                user.email,
+                user.role.name
+            )
+
+        UserView.console.print(table)

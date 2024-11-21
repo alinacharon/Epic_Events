@@ -1,5 +1,9 @@
+from rich.console import Console
+from rich.table import Table
+from rich import box
 class ClientView:
-
+    console = Console()
+    
     @staticmethod
     def manage_clients_menu():
         """Displays the client management menu and returns the user's choice."""
@@ -26,15 +30,33 @@ class ClientView:
 
     @staticmethod
     def display_client_list(client_list):
-        """Displays a list of clients."""
-        print("\nListe des clients :")
+        """Displays a list of clients using Rich table."""
+        ClientView.console.print("\n[bold cyan]Liste des clients :[/bold cyan]\n")
+
         if not client_list:
-            print("Aucun client trouvé.")
+            ClientView.console.print("[bold red]Aucun client trouvé.[/bold red]")
             return
+
+        table = Table(show_header=True, header_style="cyan", box=box.SQUARE)
+        table.add_column("ID", style="dim", width=6)
+        table.add_column("Nom du client", style="bold blue")
+        table.add_column("Email", style="white")
+        table.add_column("Entreprise", style="white")
+        table.add_column("Téléphone", style="blue")
+        table.add_column("Commercial", style="yellow")
+
         for client in client_list:
             commercial_username = client.commercial.username if client.commercial else "Non attribué"
-            print(f"- {client.id}: {client.full_name}, Email : {client.email}, "
-                  f"Entreprise : {client.company_name}, Téléphone : {client.phone}, Commercial : {commercial_username}")
+            table.add_row(
+                str(client.id),
+                client.full_name,
+                client.email,
+                client.company_name if client.company_name else "N/A",
+                client.phone if client.phone else "N/A",
+                commercial_username
+            )
+
+        ClientView.console.print(table)
 
     @staticmethod
     def search_criteria():

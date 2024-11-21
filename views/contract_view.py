@@ -1,7 +1,11 @@
 from models.entities.contract import Contract
-
+from rich.console import Console
+from rich.table import Table
+from rich import box
 
 class ContractView:
+    console = Console()
+    
     @classmethod
     def show_contract_management_menu(cls):
         """Display the contract management menu for management roles."""
@@ -79,13 +83,33 @@ class ContractView:
 
     @staticmethod
     def display_contract_list(contracts):
-        """Display a list of contracts."""
-        print("\nListe des contrats :")
+        """Display a list of contracts using Rich table."""
+        ContractView.console.print("\n[bold cyan]Liste des contrats :[/bold cyan]\n")
+
         if not contracts:
-            print("Aucun contrat trouvé.")
+            ContractView.console.print("[bold red]Aucun contrat trouvé.[/bold red]")
             return
 
+        table = Table(show_header=True, header_style="bold cyan", box=box.SQUARE)
+        table.add_column("ID", style="dim", width=6)
+        table.add_column("ID du client", style="bold blue")
+        table.add_column("ID du Commercial", style="white")
+        table.add_column("Montant total", style="white")
+        table.add_column("Montant restant", style="white")
+        table.add_column("Signé", style="blue")
+
         for contract in contracts:
-            print(f"- ID : {contract.id}, Client : {contract.client_id}, Com. ID : {contract.commercial_id}, "
-                  f"Montant total : {contract.total_amount}, Restant : {contract.remaining_amount}, "
-                  f"Signé : {'Oui' if contract.signed else 'Non'}")
+            client_id = str (contract.client_id )
+            commercial_username = contract.commercial.username
+            signed_status = "Oui" if contract.signed else "Non"
+            
+            table.add_row(
+                str(contract.id),
+                client_id,
+                commercial_username,
+                f"{contract.total_amount} €",
+                f"{contract.remaining_amount} €",
+                signed_status
+            )
+
+        ContractView.console.print(table)

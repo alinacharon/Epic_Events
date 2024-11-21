@@ -1,7 +1,11 @@
 from datetime import datetime
-
+from rich.console import Console
+from rich.table import Table
+from rich import box
 
 class EventView:
+    console = Console()
+    
     # MANAGEMENT TEAM
     @classmethod
     def management_events_menu(cls):
@@ -115,23 +119,37 @@ class EventView:
 
     @staticmethod
     def display_event_list(events):
-        """Display a list of events."""
-        print("\nListe des événements:\n")
+        """Display a list of events using Rich table."""
+        EventView.console.print("\n[bold cyan]Liste des événements:[/bold cyan]\n")
+
         if not events:
-            print("Aucun événement trouvé.")
+            EventView.console.print("[bold red]Aucun événement trouvé.[/bold red]")
             return
+        
+        table = Table(show_header=True, header_style="bold cyan", box=box.SQUARE)
+        table.add_column("ID", style="dim", width=6)
+        table.add_column("Nom de l'événement", style="bold blue")
+        table.add_column("Date de début", style="white")
+        table.add_column("Date de fin", style="white")
+        table.add_column("Lieu", style="green")
+        table.add_column("Participants", style="white")
+        table.add_column("Client", style="white")
+        table.add_column("Support", style="yellow")
 
         for event in events:
             support_contact_name = event.support_contact.username if event.support_contact else "Non assigné"
-            print(
-                f"- ID: {event.id}, "
-                f"Nom: {event.name}, "
-                f"Date: {event.start_date.strftime('%d/%m/%Y %H:%M')}, "
-                f"Lieu: {event.location}, "
-                f"Participants: {event.num_attendees}, "
-                f"Client: {event.client.company_name}, "
-                f"Support: {support_contact_name}"
+            table.add_row(
+                str(event.id),
+                event.name,
+                event.start_date.strftime('%d/%m/%Y %H:%M'),
+                event.end_date.strftime('%d/%m/%Y %H:%M'),
+                event.location,
+                str(event.num_attendees),
+                event.client.company_name,
+                support_contact_name
             )
+
+        EventView.console.print(table)
 
     @classmethod
     def filter_events_menu(cls):
