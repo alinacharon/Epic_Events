@@ -55,23 +55,9 @@ def init_database():
             create_tables(engine)
 
     except SQLAlchemyError as e:
-        logger.error(f"Une erreur est survenue lors de l'initialisation de la base de données : {e}")
+        logger.error(
+            f"Une erreur est survenue lors de l'initialisation de la base de données : {e}")
         raise
-
-
-def reset_database():
-    """Delete all tables and recreate them."""
-    engine = create_db_engine()
-    try:
-        Base.metadata.drop_all(engine)
-        logger.info("All tables dropped successfully.")
-        Base.metadata.create_all(engine)
-        logger.info("All tables recreated successfully.")
-    except SQLAlchemyError as e:
-        logger.error(f"Error resetting database: {e}")
-        raise
-    finally:
-        engine.dispose()
 
 
 if __name__ == "__main__":
