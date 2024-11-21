@@ -43,31 +43,20 @@ def create_tables(engine):
 
 def init_database():
     """Initializes the database and creates all necessary tables."""
-    postgres_engine = None
-    engine = None
-
     try:
-        # Create a connection to the default 'postgres' database
-        postgres_engine = create_db_engine('postgres')
+        # Connexion à la base de données 'postgres' par défaut
+        with create_db_engine('postgres') as postgres_engine:
+            # Crée la base de données
+            create_database(postgres_engine)
 
-        # Create the database
-        create_database(postgres_engine)
-
-        # Connect to the created or existing database
-        engine = create_db_engine()
-
-        # Create tables
-        create_tables(engine)
+        # Connexion à la base de données créée ou existante
+        with create_db_engine() as engine:
+            # Crée les tables
+            create_tables(engine)
 
     except SQLAlchemyError as e:
-        logger.error(f"An error occurred during database initialization: {e}")
+        logger.error(f"Une erreur est survenue lors de l'initialisation de la base de données : {e}")
         raise
-
-    finally:
-        if postgres_engine:
-            postgres_engine.dispose()
-        if engine:
-            engine.dispose()
 
 
 def reset_database():
