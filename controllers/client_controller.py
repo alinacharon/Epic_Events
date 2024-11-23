@@ -44,6 +44,9 @@ class ClientController:
 
     def create_client(self):
         """Create a new client."""
+        if self.user.role != Role.COMMERCIAL:
+            MainView.print_error("Accès refusé. Cette fonction est réservée aux commerciaux.")
+            return
         try:
             full_name, email, phone, company_name = ClientView.get_client_data()
 
@@ -88,6 +91,9 @@ class ClientController:
 
     def update_client(self):
         """Update an existing client."""
+        if self.user.role != Role.COMMERCIAL:
+            MainView.print_error("Accès refusé. Cette fonction est réservée aux commerciaux.")
+            return
         client_id = ClientView.get_client_id()
         existing_client = self.client_manager.get_client_by_id(client_id)
 

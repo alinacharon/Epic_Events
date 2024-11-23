@@ -31,6 +31,9 @@ class UserController:
 
     def create_user(self):
         """Create a new user."""
+        if self.user.role != Role.MANAGEMENT:
+            MainView.print_error("Accès refusé. Cette fonction est réservée aux management.")
+            return
         try:
             username, email, role, password = UserView.get_user_info()
             role_enum = Role[role.upper()]
@@ -56,6 +59,9 @@ class UserController:
 
     def update_user(self):
         """Update an existing user."""
+        if self.user.role != Role.MANAGEMENT:
+            MainView.print_error("Accès refusé. Cette fonction est réservée aux management.")
+            return
         user_id = UserView.get_user_id()
 
         existing_user = self.user_manager.get_user_by_id(user_id)
@@ -80,6 +86,9 @@ class UserController:
 
     def delete_user(self):
         """Delete an existing user."""
+        if self.user.role != Role.MANAGEMENT:
+            MainView.print_error("Accès refusé. Cette fonction est réservée aux management.")
+            return
         user_id = UserView.get_user_id()
 
         try:
