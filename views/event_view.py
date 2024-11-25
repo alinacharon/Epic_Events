@@ -142,7 +142,9 @@ class EventView:
         table.add_column("Lieu", style="green")
         table.add_column("Participants", style="white")
         table.add_column("Client", style="white")
+        table.add_column("Client contact", style="white")
         table.add_column("Support", style="yellow")
+        table.add_column("Notes", style="white")
 
         for event in events:
             support_contact_name = event.support_contact.username if event.support_contact else "Non assigné"
@@ -154,7 +156,9 @@ class EventView:
                 event.location,
                 str(event.num_attendees),
                 event.client.company_name,
-                support_contact_name
+                event.client.phone,
+                support_contact_name,
+                event.notes
             )
 
         EventView.console.print(table)

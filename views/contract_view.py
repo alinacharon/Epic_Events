@@ -117,21 +117,24 @@ class ContractView:
             return
 
         table = Table(show_header=True, header_style="bold cyan", box=box.SQUARE)
-        table.add_column("ID", style="dim", width=6)
-        table.add_column("ID du client", style="bold blue")
-        table.add_column("Commercial", style="white")
+        table.add_column("ID du contrat", style="dim", width=6)
+        table.add_column("ID du client", style="white")
+        table.add_column("Nom de l'entreprise", style="white")
+        table.add_column("Commercial", style="bold blue")
         table.add_column("Montant total", style="white")
         table.add_column("Montant restant", style="white")
         table.add_column("Signé", style="blue")
 
         for contract in contracts:
-            client_id = str (contract.client_id )
+            client_id = str (contract.client_id)
             commercial_username = contract.commercial.username
+            company_name = contract.client.company_name
             signed_status = "Oui" if contract.signed else "Non"
             
             table.add_row(
                 str(contract.id),
                 client_id,
+                company_name,
                 commercial_username,
                 f"{contract.total_amount} €",
                 f"{contract.remaining_amount} €",

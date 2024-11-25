@@ -24,7 +24,7 @@ class ContractManager:
     def get_all_contracts(self):
         """Retrieve all contracts with related data (e.g., commercial)."""
         with self.Session() as session:
-            return session.query(Contract).options(joinedload(Contract.commercial)).all()
+            return session.query(Contract).options(joinedload(Contract.commercial)).options(joinedload(Contract.client)).all()
 
     def get_contract_by_id(self, contract_id):
         """Retrieve a contract by ID with related commercial and client data."""
@@ -37,7 +37,7 @@ class ContractManager:
     def get_contracts_by_commercial(self, commercial_id):
         """Retrieve contracts for a specific commercial with related data."""
         with self.Session() as session:
-            contracts = session.query(Contract).options(joinedload(Contract.commercial)) \
+            contracts = session.query(Contract).options(joinedload(Contract.commercial)).options(joinedload(Contract.client)) \
                 .filter(Contract.commercial_id == commercial_id).all()
             return contracts
         
@@ -60,9 +60,9 @@ class ContractManager:
     def get_unsigned_contracts(self):
         """Retrieve all unsigned contracts."""
         with self.Session() as session:
-            return session.query(Contract).options(joinedload(Contract.commercial)).filter(Contract.signed == False).all()
+            return session.query(Contract).options(joinedload(Contract.commercial)).options(joinedload(Contract.client)).filter(Contract.signed == False).all()
 
     def get_not_fully_paid_contracts(self):
         """Retrieve contracts that are not fully paid."""
         with self.Session() as session:
-            return session.query(Contract).options(joinedload(Contract.commercial)).filter(Contract.remaining_amount > 0).all()
+            return session.query(Contract).options(joinedload(Contract.commercial)).options(joinedload(Contract.client)).filter(Contract.remaining_amount > 0).all()

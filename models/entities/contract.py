@@ -15,7 +15,6 @@ class Contract(Base):
 
     client_id: Mapped[int] = mapped_column(ForeignKey("clients.id"))
     commercial_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    # Отношения
     client: Mapped["Client"] = relationship(back_populates="contracts")
     commercial: Mapped["User"] = relationship(
         back_populates="managed_contracts",
