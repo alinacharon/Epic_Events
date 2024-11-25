@@ -98,6 +98,11 @@ class EventController:
         contract_id = ContractView.get_contract_id()
         contract_manager = ContractManager()
         contract = contract_manager.get_contract_by_id(contract_id)
+        
+        if self.user.id != contract.commercial_id:
+            MainView.print_error(
+                "Vous ne pouvez que créer les événements pour vos propres clients.")
+            return
 
         if not contract or not contract.signed:
             MainView.print_error("Le contrat n'est pas signé ou introuvable.")
