@@ -47,36 +47,32 @@ def get_db():
 def main():
     """Main application entry point."""
     setup_global_error_handler()
-    db = get_db()  
 
     try:
-        main_controller = MainController(user=None, db=db) 
-        user = None  
+        with get_db() as db: 
+            main_controller = MainController(user=None, db=db)
+            user = None
 
-        while user is None:  
-            choice = MainView.show_login_page() 
-            if choice == '1':
-                username, password = MainView.get_user_login_info()  
-                user = main_controller.login(username, password)  
-                if user:
-                    MainView.print_success("Connexion réussie !")
-                    main_controller.user = user  
-                    main_controller.main_menu(user)
+            while user is None:
+                choice = MainView.show_login_page()
+                if choice == '1':
+                    username, password = MainView.get_user_login_info()
+                    user = main_controller.login(username, password)
+                    if user:
+                        MainView.print_success("Connexion réussie !")
+                        main_controller.user = user
+                        main_controller.main_menu(user)
+                    else:
+                        MainView.print_error("Utilisateur non trouvé ou mot de passe incorrect.")
+                elif choice == 'q':
+                    MainView.print_exit()
+                    quit()
                 else:
-                    MainView.print_error("Utilisateur non trouvé ou mot de passe incorrect.")
-            elif choice == 'q':
-                MainView.print_exit()
-                quit()
-            else:
-                MainView.print_invalid_input()
+                    MainView.print_invalid_input()
 
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         print("Une erreur s'est produite. Veuillez réessayer plus tard.")
-
-    finally:
-        if db:
-            db.close()
 
 
 if __name__ == "__main__":
