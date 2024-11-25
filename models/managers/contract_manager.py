@@ -60,9 +60,9 @@ class ContractManager:
     def get_unsigned_contracts(self):
         """Retrieve all unsigned contracts."""
         with self.Session() as session:
-            return session.query(Contract).filter(Contract.signed == False).all()
+            return session.query(Contract).options(joinedload(Contract.commercial)).filter(Contract.signed == False).all()
 
     def get_not_fully_paid_contracts(self):
         """Retrieve contracts that are not fully paid."""
         with self.Session() as session:
-            return session.query(Contract).filter(Contract.remaining_amount > 0).all()
+            return session.query(Contract).options(joinedload(Contract.commercial)).filter(Contract.remaining_amount > 0).all()

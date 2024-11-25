@@ -23,9 +23,9 @@ class ContractView:
         print("\nGestion des contrats:\n")
         print("1. Voir tous les contrats")
         print("2. Mettre à jour les contrats de mes clients")
-        print("3. Voir mes contrats")
-        print("4. Voir contrats non signé")
-        print("5. Voir contrats non payés")
+        print("3. Voir contrats de mes clients")
+        print("4. Voir tous les contrats non signé")
+        print("5. Voir tous les contrats non payés")
         print("b. Retour")
         choice = input("Choisissez une option : ")
         return choice
@@ -33,16 +33,46 @@ class ContractView:
     @staticmethod
     def get_contract_id():
         """Get contract ID from user input."""
-        return input("Entrez le ID de contrat : ").strip()
+        while True:
+            contract_id = input("Entrez le ID de contrat : ").strip()
+            if not contract_id:  
+                print("L'ID du contrat ne peut pas être vide. Veuillez entrer une valeur valide.")
+                continue  
+            return contract_id
 
     @classmethod
     def get_contract_data(cls):
         """Collect data for creating a new contract."""
-        client_id = input("Entrez l'ID du client : ")
-        total_amount = float(input("Entrez le montant total : "))
-        remaining_amount = float(input("Entrez le montant restant : "))
-        signed_input = input("Le contrat est-il signé ? (oui/non) : ")
+        
+        client_id = input("Entrez l'ID du client : ").strip()
+
+        while True:
+            total_amount_str = input("Entrez le montant total : ").strip()
+            if not total_amount_str: 
+                print("Le montant total ne peut pas être vide. Veuillez entrer une valeur valide.")
+                continue
+            try:
+                total_amount = float(total_amount_str)
+                break  
+            except ValueError:
+                print("Erreur: Veuillez entrer un montant valide sous forme de nombre.")
+
+        while True:
+            remaining_amount_str = input("Entrez le montant restant : ").strip()
+            if not remaining_amount_str:  
+                print("Le montant restant ne peut pas être vide. Veuillez entrer une valeur valide.")
+                continue
+            try:
+                remaining_amount = float(remaining_amount_str)
+                break  
+            except ValueError:
+                print("Erreur: Veuillez entrer un montant valide sous forme de nombre.")
+
+        signed_input = input("Le contrat est-il signé ? (oui/non) : ").strip()
         signed = signed_input.lower() == 'oui'
+        
+        if not client_id or not signed_input:
+            raise ValueError("Tous les champs sont obligatoire et ne peuvent pas être vides.")
 
         return {
             "client_id": client_id,
@@ -66,16 +96,12 @@ class ContractView:
     def get_updated_contract_data():
         """Collect updated data for editing a contract."""
         print("\nEntrez les informations mises à jour (laissez vide pour conserver la valeur actuelle) :")
-        client_id = input("ID du client : ")
-        commercial_id = input("ID commercial : ")
         total_amount = input("Montant total : ")
         remaining_amount = input("Montant restant : ")
         signed_input = input("Le contrat est-il signé ? (oui/non) : ")
         signed = signed_input.lower() == 'oui' if signed_input else None
 
         return {
-            "client_id": client_id if client_id else None,
-            "commercial_id": commercial_id if commercial_id else None,
             "total_amount": float(total_amount) if total_amount else None,
             "remaining_amount": float(remaining_amount) if remaining_amount else None,
             "signed": signed if signed_input else None
@@ -93,7 +119,7 @@ class ContractView:
         table = Table(show_header=True, header_style="bold cyan", box=box.SQUARE)
         table.add_column("ID", style="dim", width=6)
         table.add_column("ID du client", style="bold blue")
-        table.add_column("ID du Commercial", style="white")
+        table.add_column("Commercial", style="white")
         table.add_column("Montant total", style="white")
         table.add_column("Montant restant", style="white")
         table.add_column("Signé", style="blue")

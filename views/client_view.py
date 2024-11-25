@@ -1,3 +1,4 @@
+import datetime
 from rich.console import Console
 from rich.table import Table
 from rich import box
@@ -25,7 +26,10 @@ class ClientView:
         email = input("Adresse e-mail : ").strip()
         phone = input("Téléphone : ").strip()
         company_name = input("Nom de l'entreprise : ").strip()
-
+        
+        if not full_name or not email:
+            raise ValueError("Les champs 'Nom complet' et 'Adresse e-mail' ne peuvent pas être vides.")
+        
         return full_name, email, phone, company_name
 
     @staticmethod
@@ -42,16 +46,22 @@ class ClientView:
         table.add_column("Nom du client", style="bold blue")
         table.add_column("Email", style="white")
         table.add_column("Entreprise", style="white")
+        table.add_column("Date de création", style="white")
+        table.add_column("Dernière mise à jour", style="white")
         table.add_column("Téléphone", style="blue")
         table.add_column("Commercial", style="yellow")
 
         for client in client_list:
+            created_at = client.created_at.strftime("%d/%m/%Y %H:%M:%S")
+            updated_at = client.updated_at.strftime("%d/%m/%Y %H:%M:%S")
             commercial_username = client.commercial.username if client.commercial else "Non attribué"
             table.add_row(
                 str(client.id),
                 client.full_name,
-                client.email,
+                client.email if client.email else "N/A",
                 client.company_name if client.company_name else "N/A",
+                created_at,
+                updated_at,
                 client.phone if client.phone else "N/A",
                 commercial_username
             )
@@ -87,8 +97,13 @@ class ClientView:
 
     @staticmethod
     def get_client_id():
-        """Prompts for the client ID to search or edit."""
-        return input("Entrez l'ID du client : ").strip()
+        """Get client ID from user input."""
+        while True:
+            contract_id = input("Entrez l'ID du client : ").strip()
+            if not contract_id:  
+                print("L'ID du client ne peut pas être vide. Veuillez entrer une valeur valide.")
+                continue  
+            return contract_id
 
     @staticmethod
     def get_updated_client_data():

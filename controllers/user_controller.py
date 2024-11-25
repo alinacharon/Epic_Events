@@ -90,7 +90,10 @@ class UserController:
             MainView.print_error("Accès refusé. Cette fonction est réservée aux management.")
             return
         user_id = UserView.get_user_id()
-
+        if int(user_id) == self.user.id: 
+            MainView.print_error("Vous ne pouvez pas supprimer vous-même.")
+            return
+            
         try:
             if self.user_manager.delete_user(user_id):
                 MainView.print_success(f"L'utilisateur {user_id} a été supprimé avec succès.")

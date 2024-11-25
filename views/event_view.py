@@ -44,10 +44,15 @@ class EventView:
         print("q. Quitter")
         return input("Choisissez une option : ").strip()
 
-    @staticmethod
+
     def get_event_id():
         """Get event ID from user input."""
-        return input("Entrez l'ID de l'événement : ").strip()
+        while True:
+            event_id = input("Entrez l'ID de l'événement : ").strip()
+            if not event_id:  
+                print("L'ID de l'événement ne peut pas être vide. Veuillez entrer une valeur valide.")
+                continue  
+            return event_id
 
     @staticmethod
     def parse_date(date_str: str) -> datetime:
@@ -63,12 +68,15 @@ class EventView:
         """Collect event information from user input."""
         print("\nEntrez les informations de l'événement:")
         try:
-            name = input("Nom de l'événement : ")
+            name = input("Nom de l'événement : ").strip()
             start_date = cls.parse_date(input("Date de début (DD/MM/YYYY HH:MM) : "))
             end_date = cls.parse_date(input("Date de fin (DD/MM/YYYY HH:MM) : "))
-            location = input("Lieu : ")
+            location = input("Lieu : ").strip()
             num_attendees = int(input("Nombre de participants : "))
             notes = input("Notes (optionnel) : ")
+            
+            if not name or not start_date or not end_date or not location or not num_attendees:
+                raise ValueError("Tous les champs sauf 'Notes' sont obligatoire et ne peuvent pas être vides.")
 
             return {
                 "name": name,

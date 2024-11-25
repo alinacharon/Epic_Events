@@ -232,11 +232,11 @@ class EventController:
 
             if updated_event is None:
                 MainView.print_error(
-                    f"Un support (ID:{support_id}) est déjà assigné à l'événement ID:{event_id}.")
+                    f"Un support (ID:{support_id}) est déjà assigné à l'événement ID : {event_id}.")
                 return
 
-            MainView.print_success(f"Succès : événement ID:{
-                                   event_id} assigné au Support ID:{support_id}")
+            MainView.print_success(f"Succès : événement ID : {
+                                   event_id} assigné au Support ID : {support_id}")
 
         except ValueError as e:
             MainView.print_error(f"Erreur de saisie: {e}")

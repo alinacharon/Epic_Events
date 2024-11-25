@@ -19,16 +19,24 @@ class UserView:
     @staticmethod
     def get_user_id():
         """Prompt for the user ID to search or edit."""
-        return input("Entrez l'ID de employé : ").strip()
+        while True:
+            user_id = input("Entrez l'ID de l'employé : ").strip()
+            if not user_id:  
+                print("L'ID de l'employé ne peut pas être vide. Veuillez entrer une valeur valide.")
+                continue  
+            return user_id
 
     @classmethod
     def get_user_info(cls):
         """Collect user information for creating a new user."""
-        username = input("Entrez le nom d'utilisateur : ")
-        email = input("Entrez l'adresse e-mail : ")
+        username = input("Entrez le nom d'utilisateur : ").strip()
+        email = input("Entrez l'adresse e-mail : ").strip()
         role = input(
-            "Entrez le rôle de l'utilisateur (COMMERCIAL, MANAGEMENT, SUPPORT) : ")
-        password = input("Entrez le mot de passe : ")
+            "Entrez le rôle de l'utilisateur (COMMERCIAL, MANAGEMENT, SUPPORT) : ").strip()
+        password = input("Entrez le mot de passe : ").strip()
+        if not username or not email or not role or not password:
+            raise ValueError("Tous les champs sont obligatoire et ne peuvent pas être vides.")
+
         return username, email, role, password
 
     @staticmethod

@@ -13,7 +13,6 @@ def create_admin_user():
         try:
             # Admin creation
             admin_user = user_manager.add_user(
-                db=session,
                 username='admin',
                 email='admin@epicevents.com',
                 role=Role.MANAGEMENT,
